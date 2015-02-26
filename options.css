@@ -1,0 +1,107 @@
+/*Options Page*/
+
+body {
+	background:#eee;
+	font-family:Arial, Helvetica, Sans-serif;
+	font-size:14px;
+	color:#3D3D3D;	
+}
+
+.settings {
+	background:#FFF;
+	margin:50px auto;
+	padding:30px;
+	max-width:800px;	
+}
+
+h1 {
+	text-align:center;
+	color:#313131;	
+}
+
+p {
+	color:#707070;
+}
+
+a {
+	color:#53A2EC;
+	text-decoration:none;	
+}
+
+a:hover {
+	color:#2473BD;	
+}
+
+hr {
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	height: 0;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border: 0;
+	border-top: 1px solid #eee;
+}
+
+#options-area {
+	margin-top:50px;	
+}
+
+.text-center {
+	text-align:center;
+}	
+
+.control-group {
+	margin-bottom:20px;	
+}
+
+.control-label {
+	float:left;
+	margin:7px;
+}
+
+.help-block {
+	font-size:12px;	
+}
+
+.controls {
+	margin-left:250px;	
+}
+
+.controls input[type=text], .controls select {
+	padding:5px 10px;
+	border:solid 1px #CCC;
+	width:300px;
+}
+
+select[disabled], input[disabled] {
+cursor: not-allowed;
+background-color: #eee;
+opacity: 1;
+}
+
+.btn {
+display: inline-block;
+padding: 6px 12px;
+margin-bottom: 0;
+font-size: 14px;
+font-weight: 400;
+line-height: 1.42857143;
+text-align: center;
+white-space: nowrap;
+vertical-align: middle;
+cursor: pointer;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+background-image: none;
+border: 1px solid transparent;
+border-radius: 4px;
+}
+
+.btn-success {
+background-color: #2cc76a;
+background-image: none;
+border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+color:#FFF;
+}

@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>Better Envato Options</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<div class="settings">
+  <h1>Better Envato Options</h1>
+  <div id="options-outer">
+    <div id="options-inner">
+      <div id="options-area">
+        <div class="control-group">
+          <label class="control-label" for="username">Envato Username</label>
+          <div class="controls">
+            <input type="text" name="username" id="username">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="apikey">Envato API Key</label>
+          <div class="controls">
+            <input type="text" name="apikey" id="apikey">
+          </div>
+        </div>
+        <hr>
+        <div class="control-group">
+          <label class="control-label" for="sales_notification">Sales Notification</label>
+          <div class="controls">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="sales_notification" name="sales_notification" checked>
+                Show desktop notification for new sales </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="play_sound" name="play_sound" checked>
+                Play cha-ching Sound </label>
+            </div>
+            
+            <!--<p class="help-block">Please click allow button at the top to activate this feature</p>--> 
+          </div>
+        </div>
+        <hr>
+        <div class="control-group">
+          <label class="control-label" for="comment_notification">Comment Notification</label>
+          <div class="controls">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="comment_notification" name="comment_notification" checked>
+                Show desktop notification for new comments </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="comment_sound" name="comment_sound" checked>
+                Play comment notification sound </label>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="control-group">
+          <label class="control-label" for="localise_earnings">Localize Earnings</label>
+          <div class="controls">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="localise_earnings" name="localise_earnings" checked>
+                Show earnings amount in your local currency </label>
+            </div>
+            <p class="help-block">Please Fill below details to localize earnings</p>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="favorite-movie-dropdown">Open Exchange API Key</label>
+          <div class="controls">
+            <input type="text" name="openexchange" id="openexchange">
+            <p class="help-block"><a href="https://openexchangerates.org/signup/free" target="_blank">Signup free</a> to get API Key from Open Exchange rate</p>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="favorite-movie-dropdown">Local Currency</label>
+          <div class="controls">
+            <select name="currency">
+              <option selected></option>
+              <optgroup label="Popular">
+              <option value="EUR"> EUR Euro </option>
+              <option value="INR"> INR India Rupees </option>
+              <option value="GBP"> GBP United Kingdom Pounds </option>
+              <option value="FRF"> FRF France Francs </option>
+              <option value="AUD"> AUD Australia Dollars </option>
+              <option value="DEM"> DEM Germany Deutsche Marks </option>
+              <option value="FRF"> FRF France Francs </option>
+              <option value="JPY"> JPY Japan Yen </option>
+              <option value="NLG"> NLG Netherlands Guilders </option>
+              <option value="ITL"> ITL Italy Lira </option>
+              <option value="CHF"> CHF Switzerland Francs </option>
+              <option value="DZD"> DZD Algeria Dinars </option>
+              <option value="MYR"> MYR Malaysia Ringgit </option>
+              <option value="SGD"> SGD Singapore Dollars </option>
+              </optgroup>
+              <optgroup label="All others">
+              <option value="ARP"> ARP Argentina Pesos </option>
+              <option value="AUD"> AUD Australia Dollars </option>
+              <option value="ATS"> ATS Austria Schillings </option>
+              <option value="BSD"> BSD Bahamas Dollars </option>
+              <option value="BBD"> BBD Barbados Dollars </option>
+              <option value="BEF"> BEF Belgium Francs </option>
+              <option value="BMD"> BMD Bermuda Dollars </option>
+              <option value="BRR"> BRR Brazil Real </option>
+              <option value="BGL"> BGL Bulgaria Lev </option>
+              <option value="CAD"> CAD Canada Dollars </option>
+              <option value="CLP"> CLP Chile Pesos </option>
+              <option value="CNY"> CNY China Yuan Renmimbi </option>
+              <option value="CYP"> CYP Cyprus Pounds </option>
+              <option value="CSK"> CSK Czech Republic Koruna </option>
+              <option value="DKK"> DKK Denmark Kroner </option>
+              <option value="NLG"> NLG Dutch Guilders </option>
+              <option value="XCD"> XCD Eastern Caribbean Dollars </option>
+              <option value="EGP"> EGP Egypt Pounds </option>
+              <option value="EUR"> EUR Euro </option>
+              <option value="FJD"> FJD Fiji Dollars </option>
+              <option value="FIM"> FIM Finland Markka </option>
+              <option value="FRF"> FRF France Francs </option>
+              <option value="DEM"> DEM Germany Deutsche Marks </option>
+              <option value="XAU"> XAU Gold Ounces </option>
+              <option value="GRD"> GRD Greece Drachmas </option>
+              <option value="HKD"> HKD Hong Kong Dollars </option>
+              <option value="HUF"> HUF Hungary Forint </option>
+              <option value="ISK"> ISK Iceland Krona </option>
+              <option value="INR"> INR India Rupees </option>
+              <option value="IDR"> IDR Indonesia Rupiah </option>
+              <option value="IEP"> IEP Ireland Punt </option>
+              <option value="ILS"> ILS Israel New Shekels </option>
+              <option value="ITL"> ITL Italy Lira </option>
+              <option value="JMD"> JMD Jamaica Dollars </option>
+              <option value="JPY"> JPY Japan Yen </option>
+              <option value="JOD"> JOD Jordan Dinar </option>
+              <option value="KRW"> KRW Korea (South) Won </option>
+              <option value="LBP"> LBP Lebanon Pounds </option>
+              <option value="LUF"> LUF Luxembourg Francs </option>
+              <option value="MYR"> MYR Malaysia Ringgit </option>
+              <option value="MXP"> MXP Mexico Pesos </option>
+              <option value="NLG"> NLG Netherlands Guilders </option>
+              <option value="NZD"> NZD New Zealand Dollars </option>
+              <option value="NOK"> NOK Norway Kroner </option>
+              <option value="PKR"> PKR Pakistan Rupees </option>
+              <option value="XPD"> XPD Palladium Ounces </option>
+              <option value="PHP"> PHP Philippines Pesos </option>
+              <option value="XPT"> XPT Platinum Ounces </option>
+              <option value="PLZ"> PLZ Poland Zloty </option>
+              <option value="PTE"> PTE Portugal Escudo </option>
+              <option value="ROL"> ROL Romania Leu </option>
+              <option value="RUR"> RUR Russia Rubles </option>
+              <option value="SAR"> SAR Saudi Arabia Riyal </option>
+              <option value="XAG"> XAG Silver Ounces </option>
+              <option value="SGD"> SGD Singapore Dollars </option>
+              <option value="SKK"> SKK Slovakia Koruna </option>
+              <option value="ZAR"> ZAR South Africa Rand </option>
+              <option value="KRW"> KRW South Korea Won </option>
+              <option value="ESP"> ESP Spain Pesetas </option>
+              <option value="XDR"> XDR Special Drawing Right (IMF) </option>
+              <option value="SDD"> SDD Sudan Dinar </option>
+              <option value="SEK"> SEK Sweden Krona </option>
+              <option value="CHF"> CHF Switzerland Francs </option>
+              <option value="TWD"> TWD Taiwan Dollars </option>
+              <option value="THB"> THB Thailand Baht </option>
+              <option value="TTD"> TTD Trinidad and Tobago Dollars </option>
+              <option value="GBP"> GBP United Kingdom Pounds </option>
+              <option value="VEB"> VEB Venezuela Bolivar </option>
+              <option value="ZMK"> ZMK Zambia Kwacha </option>
+              <option value="EUR"> EUR Euro </option>
+              <option value="XCD"> XCD Eastern Caribbean Dollars </option>
+              <option value="XDR"> XDR Special Drawing Right (IMF) </option>
+              <option value="XAG"> XAG Silver Ounces </option>
+              <option value="XAU"> XAU Gold Ounces </option>
+              <option value="XPD"> XPD Palladium Ounces </option>
+              <option value="XPT"> XPT Platinum Ounces </option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <hr>
+        <div class="control-group">
+          <label class="control-label" for="verify_purchase">Verify Purchase</label>
+          <div class="controls">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="verify_purchase" name="verify_purchase" checked>
+                Show Verify Purchase block on Author dashboard </label>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="control-group">
+          <label class="control-label" for="hide_statement">Statement Page</label>
+          <div class="controls">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="hide_statement" name="hide_statement">
+                Hide irritating Author Fee row from statements </label>
+            </div>
+          </div>
+        </div>
+        <hr>
+      </div>
+    </div>
+    <div class="text-center">
+      <button id="save-options-button" class="btn btn-success">Save Options</button>
+    </div>
+    <p style="display:none;" id="saved" class="text-center">Saved succesfully</p>
+  </div>
+</div>
+<p align="center" style="line-height:2.2"><a href="mailto:support@surjithctly.in" target="_blank">Bugs / Feature / Suggestions</a> | Made with &hearts; by <a href="http://surjithctly.in" target="_blank">Surjith S M</a>. Copyright &copy; <a href="http://web3canvas.com" target="_blank">Web3Canvas</a> <br>
+  Powered by <a href="http://extras.envato.com/api/" target="_blank">Envato API</a> | View my <a href="http://themeforest.net/user/surjithctly/portfolio?ref=surjithctly" target="_blank">Themeforest Portfolio</a> </p>
+</div>
+<script src="jquery.min.js"></script> 
+<script src="xml2json.js"></script> 
+<script src="options.js"></script>
+</body>
+</html>
