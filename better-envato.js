@@ -26,7 +26,7 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'hide_statement']
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'hide_statement', 'verify_purchase' ]
     },
     function(response) {
         username = response.data.username;
@@ -52,7 +52,7 @@ $(document).ready(function() {
 });
 
 //function for converting string into indian currency format
-function intToFormat(nStr) {
+function inr_currency(nStr) {
     nStr += '';
     x = nStr.split('.');
     x1 = x[0];
@@ -78,6 +78,10 @@ function intToFormat(nStr) {
     return x1 + x2;
 }
 
+// GLOBAL CURRENCY FORMAT
+function format_currency(n) {
+    return n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+}
 
 function dollartToInr() {
 
@@ -104,13 +108,17 @@ function dollartToInr() {
                 currency_sign = '€';
             } else if (currency == 'GBP') {
                 currency_sign = '£';
-            } else if (currency == 'EGP') {
-                currency_sign = '£';
             } else {
                 currency_sign = currency;
             }
-
-            $('.header-logo-account__balance').text(currency_sign + ' ' + intToFormat(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+			
+			if (currency == 'INR') {
+            $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+			} else {
+            $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+            }
+			
+			
 
         });
 
@@ -125,9 +133,6 @@ function dollartToInr() {
 
 
 $(document).ready(function() {
-
-
-
 
     // REMOVE STATEMENTS - AUTHOR FEE
 
@@ -144,7 +149,6 @@ $(document).ready(function() {
 
 
     // VERIFY PURCHASE
-
 
     if (verify_purchase != 'false') {
         var pathname = window.location.pathname;
