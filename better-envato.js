@@ -140,8 +140,19 @@ $(document).ready(function() {
         var pathname = window.location.pathname;
         if (pathname.indexOf('statement') > -1) {
             $("#stored_statement").find("tr").each(function() {
-                if ($(this).find("td").eq(3).find("span").text() == "Author Fee") {
-                    $(this).hide();
+                var author_fee = 0, 
+                    this_tr = $(this);//cache this table row
+
+                if (this_tr.find("td").eq(3).find("span").text() == "Author Fee") {
+                    this_tr.hide();
+                        author_fee    = parseFloat( this_tr.find('.statement__price').text().replace(/[^0-9.]/g, "") );
+                    var next_tr       = this_tr.next('tr'),
+                        the_price     = parseFloat( next_tr.find('.statement__price').text().replace(/[^0-9.]/g, "") ),
+                        exact_amount  = the_price - author_fee;
+
+                    // Exact amount
+                    next_tr.find('.statement__price').text( '$' + exact_amount );
+                    next_tr.find('.statement__amount').text( '$' + exact_amount );
                 }
             });
         }
