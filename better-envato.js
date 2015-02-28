@@ -137,10 +137,25 @@ $(document).ready(function() {
     // REMOVE STATEMENTS - AUTHOR FEE
 
     if (hide_statement != 'false') {
-        var pathname = window.location.pathname;
+        var pathname        = window.location.pathname;
+        var amount          = 0;
+        var amount_string   = '';
+        var order_id        = 0;
+        var next_amount     = '';
+
         if (pathname.indexOf('statement') > -1) {
             $("#stored_statement").find("tr").each(function() {
                 if ($(this).find("td").eq(3).find("span").text() == "Author Fee") {
+
+                    order_id        = $(this).find('.statement__order_id').text();
+                    amount_string   = $(this).find('.statement__amount').text();
+                    amount          = parseFloat(amount_string.substring(1, amount_string.length));
+                    next_amount     = $(this).next().find('.statement__amount').text();
+                    next_amount     = parseFloat(next_amount.substring(1, next_amount.length));
+
+                    amount          = amount + next_amount;
+
+                    $(this).next().find('.statement__amount').text('$' + amount);
                     $(this).hide();
                 }
             });
@@ -219,4 +234,4 @@ $(document).ready(function() {
 
 
 
-}); /*End Documet Ready*/
+}); /*End Document Ready*/
