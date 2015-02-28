@@ -155,7 +155,7 @@ $(document).ready(function() {
 
                     amount          = amount + next_amount;
 
-                    $(this).next().find('.statement__amount').text('$' + amount);
+                    $(this).next().find('.statement__amount').text('$' + amount.toFixed(2));
                     $(this).hide();
                 }
             });
