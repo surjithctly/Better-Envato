@@ -21,7 +21,9 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "currency"}, functio
 });
 chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}, function(response) {
   localise_earnings = response.data;
-});*/
+});
+@todo Link for referrals! Create option!
+*/
 
 
 chrome.runtime.sendMessage({
@@ -117,8 +119,8 @@ function dollartToInr() {
 			} else {
             $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
             }
-			
-			
+
+
 
         });
 
@@ -162,6 +164,28 @@ $(document).ready(function() {
         }
     }
 
+    // SHOW LINKS IN REFERRALS PAGE
+    if(pathname.indexOf('/referrals') > -1) {
+        var source  = '';
+        var path    = '';
+        var url     = '';
+
+        var ifTableExists = setInterval(function() {
+            if ($('#results').length) {
+                clearInterval(ifTableExists);
+                $('#results').find('tr').each(function(){
+                    if($(this).find('td').eq(1).text() != '(not set)') {
+                        source = $(this).find('td').eq(0).text();
+                        path   = $(this).find('td').eq(1).text();
+
+                        url = '<a href="http://'+source+path+'" target="_blank">'+path+'</a>';
+
+                        $(this).find('td').eq(1).html(url);
+                    }
+                });
+            }
+        }, 100);
+    }
 
     // VERIFY PURCHASE
 
