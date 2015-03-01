@@ -3,7 +3,7 @@ Name: Better Envato
 Keywords: make Envato Better
 Created by: Surjith S M © 2015-2020
 */
-var username, apikey, openexchange, currency, localise_earnings, hide_statement;
+var username, apikey, openexchange, currency, localise_earnings, hide_statement, create_hrefs;
 
 /*chrome.runtime.sendMessage({method: "getLocalStorage", key: "username"}, function(response) {
   username = response.data;
@@ -22,25 +22,23 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "currency"}, functio
 chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}, function(response) {
   localise_earnings = response.data;
 });
-@todo Link for referrals! Create option!
 */
-
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'hide_statement', 'verify_purchase' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'hide_statement', 'verify_purchase', 'create_hrefs' ]
     },
     function(response) {
-        username = response.data.username;
-        apikey = response.data.apikey;
-        openexchange = response.data.openexchange;
-        currency = response.data.currency;
-        localise_earnings = response.data.localise_earnings;
-        hide_statement = response.data.hide_statement;
-        verify_purchase = response.data.verify_purchase;
+        username            = response.data.username;
+        apikey              = response.data.apikey;
+        openexchange        = response.data.openexchange;
+        currency            = response.data.currency;
+        localise_earnings   = response.data.localise_earnings;
+        hide_statement      = response.data.hide_statement;
+        verify_purchase     = response.data.verify_purchase;
+        create_hrefs        = response.data.create_hrefs;
     }
 );
-
 
 $(document).ready(function() {
     if (localise_earnings != 'false') {
@@ -165,26 +163,28 @@ $(document).ready(function() {
     }
 
     // SHOW LINKS IN REFERRALS PAGE
-    if(pathname.indexOf('/referrals') > -1) {
-        var source  = '';
-        var path    = '';
-        var url     = '';
+    if(create_hrefs != 'false') {
+        if (pathname.indexOf('/referrals') > -1) {
+            var source = '';
+            var path = '';
+            var url = '';
 
-        var ifTableExists = setInterval(function() {
-            if ($('#results').length) {
-                clearInterval(ifTableExists);
-                $('#results').find('tr').each(function(){
-                    if($(this).find('td').eq(1).text() != '(not set)') {
-                        source = $(this).find('td').eq(0).text();
-                        path   = $(this).find('td').eq(1).text();
+            var ifTableExists = setInterval(function () {
+                if ($('#results').length) {
+                    clearInterval(ifTableExists);
+                    $('#results').find('tr').each(function () {
+                        if ($(this).find('td').eq(1).text() != '(not set)') {
+                            source = $(this).find('td').eq(0).text();
+                            path = $(this).find('td').eq(1).text();
 
-                        url = '<a href="http://'+source+path+'" target="_blank">'+path+'</a>';
+                            url = '<a href="http://' + source + path + '" target="_blank">' + path + '</a>';
 
-                        $(this).find('td').eq(1).html(url);
-                    }
-                });
-            }
-        }, 100);
+                            $(this).find('td').eq(1).html(url);
+                        }
+                    });
+                }
+            }, 100);
+        }
     }
 
     // VERIFY PURCHASE
