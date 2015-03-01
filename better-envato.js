@@ -192,14 +192,14 @@ $(document).ready(function() {
                                 unconverted = parseFloat(unconverted.substring(1, unconverted.length));
 
                                 converted = convertPrice(unconverted, function(data){
-                                    current_object.find('td').eq(7).text(data);
+                                    current_object.find('td').eq(7).text(data).attr('title', 'Actual Earnings: $' + unconverted);
                                 });
                             }
                             if (current_object.find('td').eq(8).text() != '') {
                                 unconverted = current_object.find('td').eq(8).text();
                                 unconverted = unconverted.substring(1, unconverted.length);
                                 converted = convertPrice(unconverted, function(data){
-                                    current_object.find('td').eq(8).text(data);
+                                    current_object.find('td').eq(8).text(data).attr('title', 'Actual Earnings: $' + unconverted);
                                 });
                             }
                         }
