@@ -84,7 +84,6 @@ function format_currency(n) {
 }
 
 function dollartToInr() {
-
     var posturl = 'http://marketplace.envato.com/api/edge/' + username + '/' + apikey + '/account.json';
     var earningsdollar, finalearnings, convertrate;
 
@@ -94,13 +93,10 @@ function dollartToInr() {
 
     $.getJSON(conversionurl, function(data) {
         convertrate = data.rates[currency]; /*  * 0.975 Midmarket rate*/
-        //console.log(convertrate);
-
 
         $.getJSON(posturl, function(data) {
             earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
             finalearnings = earningsdollar * convertrate;
-            //console.log(finalearnings);
 
             if (currency == 'INR') {
                 currency_sign = '₹';
@@ -111,30 +107,52 @@ function dollartToInr() {
             } else {
                 currency_sign = currency;
             }
-			
-			if (currency == 'INR') {
-            $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
-			} else {
-            $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+
+            if (currency == 'INR') {
+                $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+            } else {
+                $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
             }
-
-
-
         });
-
-
-
     });
-
-
-
 }
 
+function convertPrice(unconverted_price, handleData) {
+    var conversion_rate, converted_price;
 
+    $.ajax({
+        url: 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange,
+        async: false,
+        success:function(data){
+            conversion_rate = data.rates[currency];
+
+            if (currency == 'INR') {
+                currency_sign = '₹';
+            } else if (currency == 'EUR') {
+                currency_sign = '€';
+            } else if (currency == 'GBP') {
+                currency_sign = '£';
+            } else {
+                currency_sign = currency;
+            }
+
+            converted_price = unconverted_price * conversion_rate;
+
+            if (currency == 'INR') {
+                converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
+            } else {
+                converted_price = currency_sign + ' ' + format_currency(converted_price);
+            }
+
+            handleData(converted_price);
+        }
+    });
+}
 
 $(document).ready(function() {
 
     // REMOVE STATEMENTS - AUTHOR FEE
+    // CONVERT CURRENCIES
 
     if (hide_statement != 'false') {
         var pathname        = window.location.pathname;
@@ -143,8 +161,11 @@ $(document).ready(function() {
         var order_id        = 0;
         var next_amount     = '';
 
+        var unconverted, converted, current_object, conversion_rate;
+
         if (pathname.indexOf('statement') > -1) {
             $("#stored_statement").find("tr").each(function() {
+
                 if ($(this).find("td").eq(3).find("span").text() == "Author Fee") {
 
                     order_id        = $(this).find('.statement__order_id').text();
@@ -157,6 +178,32 @@ $(document).ready(function() {
 
                     $(this).next().find('.statement__amount').text('$' + amount.toFixed(2));
                     $(this).hide();
+                }
+
+                if(localise_earnings != 'false') {
+                    if (openexchange == 'undefined') {
+                        return false;
+                    } else {
+                        if ($(this).is(':visible')) {
+                            current_object = $(this);
+
+                            if (current_object.find('td').eq(7).text() != '') {
+                                unconverted = current_object.find('td').eq(7).text();
+                                unconverted = parseFloat(unconverted.substring(1, unconverted.length));
+
+                                converted = convertPrice(unconverted, function(data){
+                                    current_object.find('td').eq(7).text(data);
+                                });
+                            }
+                            if (current_object.find('td').eq(8).text() != '') {
+                                unconverted = current_object.find('td').eq(8).text();
+                                unconverted = unconverted.substring(1, unconverted.length);
+                                converted = convertPrice(unconverted, function(data){
+                                    current_object.find('td').eq(8).text(data);
+                                });
+                            }
+                        }
+                    }
                 }
             });
         }
