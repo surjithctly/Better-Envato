@@ -26,17 +26,18 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'hide_statement', 'verify_purchase', 'create_hrefs' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
     },
     function(response) {
-        username            = response.data.username;
-        apikey              = response.data.apikey;
-        openexchange        = response.data.openexchange;
-        currency            = response.data.currency;
-        localise_earnings   = response.data.localise_earnings;
-        hide_statement      = response.data.hide_statement;
-        verify_purchase     = response.data.verify_purchase;
-        create_hrefs        = response.data.create_hrefs;
+        username                = response.data.username;
+        apikey                  = response.data.apikey;
+        openexchange            = response.data.openexchange;
+        currency                = response.data.currency;
+        localise_earnings       = response.data.localise_earnings;
+        localise_earnings_table = response.data.localise_earnings_table;
+        hide_statement          = response.data.hide_statement;
+        verify_purchase         = response.data.verify_purchase;
+        create_hrefs            = response.data.create_hrefs;
     }
 );
 
@@ -180,7 +181,7 @@ $(document).ready(function() {
                     $(this).hide();
                 }
 
-                if(localise_earnings != 'false') {
+                if(localise_earnings_table != 'false') {
                     if (openexchange == 'undefined') {
                         return false;
                     } else {
