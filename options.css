@@ -97,6 +97,10 @@ user-select: none;
 background-image: none;
 border: 1px solid transparent;
 border-radius: 4px;
+color: #939393;
+-webkit-transition:all .1s linear;
+transition:all .1s linear;
+outline:none;
 }
 
 .btn-success {
@@ -104,4 +108,17 @@ background-color: #2cc76a;
 background-image: none;
 border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 color:#FFF;
+}
+
+
+
+
+.highlight {
+background: #f5e9a3;
+padding: 1em 1.5em;
+-webkit-transition: background .1s linear;
+transition: background .1s linear;
+}
+.highlight.love {
+background: #f5a3cc;
 }

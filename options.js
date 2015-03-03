@@ -36,20 +36,42 @@ function save_options() {
         localStorage[$(this).attr("name")] = $(this).prop("checked");
     });
 
-    $('#saved').show().delay(1000);
-    setTimeout(function() {
-        $('#saved').hide();
-    }, 1000);
+	$(this).text('Saving...').removeClass("btn-success");
+	
+	setTimeout(function() {
+       $('#save-options-button').text('Options Saved');
+    }, 700);
+	
+	
 
-    // console.log("favorite_movie = " + favorite_movie);
+      // Ask for a good review
+  if( ! localStorage.reviewed ) {
+    $('#rate-it').html('<div class="highlight">Enjoying <strong>Better Envato</strong>? Head over to the <a class="fivestars" href="https://chrome.google.com/webstore/detail/better-envato/mlbkjbladkceacbifjpgimbkibhgbadf/reviews" target="_bank">Chrome Web Store</a> and give it 5 stars. We will love you <em>forever</em>.</div>');
+  }
 
     get_sales_data();
-
     get_comment_data();
-
     chrome.extension.getBackgroundPage().updatedSettings();
 
 }
+
+
+/**
+ * Reset the save button
+ */
+$('input, select').on('keyup click', function () {
+  $('#save-options-button').text('Save Options').addClass("btn-success");
+});
+
+
+/**
+ * Store that the user has already been to the Web Store (:. we <3 them)
+ */
+ 
+$('body').on('click', '.fivestars', function () {
+  localStorage.reviewed = true;
+  $('#rate-it').html('<div class="highlight love">You\'re <strong>awesome</strong> &hearts;');
+});
 
 
 
