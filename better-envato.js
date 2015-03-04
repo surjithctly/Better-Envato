@@ -26,7 +26,7 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_graph', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
     },
     function(response) {
         username                = response.data.username;
@@ -35,6 +35,7 @@ chrome.runtime.sendMessage({
         currency                = response.data.currency;
         localise_earnings       = response.data.localise_earnings;
         localise_earnings_table = response.data.localise_earnings_table;
+        localise_earnings_page  = response.data.localise_earnings_page;
         hide_statement          = response.data.hide_statement;
         verify_purchase         = response.data.verify_purchase;
         create_hrefs            = response.data.create_hrefs;
@@ -150,6 +151,10 @@ function convertPrice(unconverted_price, handleData) {
     });
 }
 
+function getMaxVal(array) {
+    return Math.max.apply(Math, array);
+}
+
 $(document).ready(function() {
 
     // REMOVE STATEMENTS - AUTHOR FEE
@@ -210,8 +215,76 @@ $(document).ready(function() {
         }
     }
 
+    // CONVERT CURRENCIES IN EARNINGS TAB
+    if(localise_earnings_page != 'false') {
+        var pathname = window.location.pathname;
+        if(pathname.indexOf('/earnings/sales') > -1) {
+
+            // Generate new graph
+            var graph_data = $.parseJSON($('body script[id="graphdata"]').text());
+            var current_object, unconverted, converted, scale_steps;
+
+            $.each(graph_data.datasets[0]['data'], function(i, val){
+                if(val > 0) {
+                    // Localize
+                    if (openexchange == 'undefined') {
+                        return false;
+                    } else {
+                        current_object = $(this);
+                        unconverted = parseFloat(val);
+
+                        converted = convertPrice(unconverted, function(data){
+                            if(parseFloat(data.replace(/[^0-9\.]/g, '')) > 0) {
+                                graph_data.datasets[0]['data'][i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
+                            }
+                        });
+                    }
+                }
+            });
+
+            $('.-sales').text('Sales Earnings ('+currency+')');
+
+            var chart_data = {
+                animationEasing: "easeInOutCirc",
+                animationSteps: 60,
+                scaleFontSize: 12,
+                scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+                scaleLabel: "<%=parseFloat(value).toLocaleString('en-EN', {style: 'currency', currency: '"+currency+"', minimumFractionDigits: 2})%>",
+                scaleStartValue: 0,
+                showTooltips: !1,
+                bezierCurve: !1
+            };
+
+            $(".js-graph__canvas").remove();
+            $('.graph__container').append('<canvas class="graph__canvas js-graph__canvas" width="964" height="300"></canvas>');
+
+            var canvas = $(".graph__canvas").get(0).getContext('2d');
+            new Chart(canvas).Line(graph_data, chart_data);
+
+            // Convert headers (This month, balance, total value)
+            convertPrice($('.earnings-widget__amount:eq(0)').text().substr(1), function(data){
+                $('.earnings-widget__amount:eq(0)').text(data);
+            });
+            convertPrice($('.earnings-widget__amount:eq(1)').text().substr(1), function(data){
+                $('.earnings-widget__amount:eq(1)').text(data);
+            });
+            convertPrice($('.earnings-widget__amount:eq(2)').text().substr(1), function(data){
+                $('.earnings-widget__amount:eq(2)').text(data);
+            });
+
+            // Convert prices in table
+            $('.table-general tbody, tfoot').find('tr').each(function(){
+                current_object = $(this);
+                convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
+                    current_object.find('td').eq(2).text(data);
+                });
+            });
+        }
+    }
+
     // SHOW LINKS IN REFERRALS PAGE
     if(create_hrefs != 'false') {
+        var pathname = window.location.pathname;
         if (pathname.indexOf('/referrals') > -1) {
             var source = '';
             var path = '';
