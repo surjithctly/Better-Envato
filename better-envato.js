@@ -151,10 +151,6 @@ function convertPrice(unconverted_price, handleData) {
     });
 }
 
-function getMaxVal(array) {
-    return Math.max.apply(Math, array);
-}
-
 $(document).ready(function() {
 
     // REMOVE STATEMENTS - AUTHOR FEE
