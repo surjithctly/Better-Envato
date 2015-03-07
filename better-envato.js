@@ -122,6 +122,10 @@ function dollartToInr() {
 function convertPrice(unconverted_price, handleData) {
     var conversion_rate, converted_price;
 
+    if($.type(unconverted_price) === 'string') {
+        unconverted_price = unconverted_price.replace(/[^0-9\.]/g, '');
+    }
+
     $.ajax({
         url: 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange,
         success:function(data){
@@ -137,7 +141,7 @@ function convertPrice(unconverted_price, handleData) {
                 currency_sign = currency;
             }
 
-            converted_price = unconverted_price.replace(/[^0-9\.]/g, '') * conversion_rate;
+            converted_price = unconverted_price * conversion_rate;
 
             if (currency == 'INR') {
                 converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
