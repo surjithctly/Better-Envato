@@ -26,7 +26,7 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_graph', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
     },
     function(response) {
         username                = response.data.username;
@@ -137,7 +137,7 @@ function convertPrice(unconverted_price, handleData) {
                 currency_sign = currency;
             }
 
-            converted_price = unconverted_price * conversion_rate;
+            converted_price = unconverted_price.replace(/[^0-9\.]/g, '') * conversion_rate;
 
             if (currency == 'INR') {
                 converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
