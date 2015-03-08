@@ -1,9 +1,25 @@
 // Show the config file on installation
 chrome.runtime.onInstalled.addListener(function(object) {
+
+    if (localStorage.firsttime != 'false' || localStorage.firsttime == 'undefined' ) {
     var optionsurl = chrome.extension.getURL("options.html");
     chrome.tabs.create({
         url: optionsurl
     }, function(tab) {});
+	
+    localStorage.firsttime = false;
+}
+
+var currentversion = chrome.app.getDetails().version;
+
+ if (!localStorage.version || localStorage.version != currentversion) {
+       chrome.browserAction.setBadgeText({text:"NEW"});      
+	   localStorage.version = currentversion
+}
+
+//chrome.browserAction.setBadgeBackgroundColor({color:[255, 64, 64, 230]});
+	
+	
 });
 
 
@@ -44,6 +60,7 @@ chrome.browserAction.onClicked.addListener(function(tab) { //Fired when User Cli
     chrome.tabs.create({
         url: "options.html"
     });
+	chrome.browserAction.setBadgeText({text:""}); 
 });
 
 
