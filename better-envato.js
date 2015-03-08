@@ -5,25 +5,6 @@ Created by: Surjith S M © 2015-2020
 */
 var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs;
 
-/*chrome.runtime.sendMessage({method: "getLocalStorage", key: "username"}, function(response) {
-  username = response.data;
-});
-
-chrome.runtime.sendMessage({method: "getLocalStorage", key: "apikey"}, function(response) {
-  apikey = response.data;
-});
-
-chrome.runtime.sendMessage({method: "getLocalStorage", key: "openexchange"}, function(response) {
-  openexchange = response.data;
-});
-chrome.runtime.sendMessage({method: "getLocalStorage", key: "currency"}, function(response) {
-  currency = response.data;
-});
-chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}, function(response) {
-  localise_earnings = response.data;
-});
-*/
-
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
         keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
@@ -283,12 +264,24 @@ $(document).ready(function() {
             });
 
             // Convert prices in table
-            $('.table-general tbody, tfoot').find('tr').each(function(index){
-                current_object[index] = $(this);
-                convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
-                    current_object[index].find('td').eq(2).text(data);
-                });
-            });
+			if(pathname.indexOf('/earnings/sales') > -1) {
+				$('.table-general tbody, tfoot').find('tr').each(function(index){
+					current_object[index] = $(this);
+					convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
+						current_object[index].find('td').eq(2).text(data);
+					});
+				});
+			} else if(pathname.indexOf('/earnings/referrals') > -1) {
+				$('.table-general tbody, tfoot').find('tr').each(function(index){
+					current_object[index] = $(this);
+					convertPrice($(this).find('td').eq(4).text().substr(1), function(data){
+						current_object[index].find('td').eq(4).text(data);
+					});
+					convertPrice($(this).find('td').eq(5).text().substr(1), function(data){
+						current_object[index].find('td').eq(5).text(data);
+					});
+				});
+			}
         }
     }
 
