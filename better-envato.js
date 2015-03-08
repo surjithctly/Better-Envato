@@ -3,7 +3,7 @@ Name: Better Envato
 Keywords: make Envato Better
 Created by: Surjith S M © 2015-2020
 */
-var username, apikey, openexchange, currency, localise_earnings, hide_statement, create_hrefs;
+var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs;
 
 /*chrome.runtime.sendMessage({method: "getLocalStorage", key: "username"}, function(response) {
   username = response.data;
@@ -26,7 +26,7 @@ chrome.runtime.sendMessage({method: "getLocalStorage", key: "localise_earnings"}
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
     },
     function(response) {
         username                = response.data.username;
@@ -35,6 +35,7 @@ chrome.runtime.sendMessage({
         currency                = response.data.currency;
         localise_earnings       = response.data.localise_earnings;
         localise_earnings_table = response.data.localise_earnings_table;
+        localise_earnings_page  = response.data.localise_earnings_page;
         hide_statement          = response.data.hide_statement;
         verify_purchase         = response.data.verify_purchase;
         create_hrefs            = response.data.create_hrefs;
@@ -121,9 +122,12 @@ function dollartToInr() {
 function convertPrice(unconverted_price, handleData) {
     var conversion_rate, converted_price;
 
+    if($.type(unconverted_price) === 'string') {
+        unconverted_price = unconverted_price.replace(/[^0-9\.]/g, '');
+    }
+
     $.ajax({
         url: 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange,
-        async: false,
         success:function(data){
             conversion_rate = data.rates[currency];
 
@@ -162,10 +166,10 @@ $(document).ready(function() {
         var order_id        = 0;
         var next_amount     = '';
 
-        var unconverted, converted, current_object, conversion_rate;
+        var unconverted, converted, current_object = [], conversion_rate;
 
         if (pathname.indexOf('statement') > -1) {
-            $("#stored_statement").find("tr").each(function() {
+            $("#stored_statement").find("tr").each(function(i) {
 
                 if ($(this).find("td").eq(3).find("span").text() == "Author Fee") {
 
@@ -186,21 +190,21 @@ $(document).ready(function() {
                         return false;
                     } else {
                         if ($(this).is(':visible')) {
-                            current_object = $(this);
+                            current_object[i] = $(this);
 
-                            if (current_object.find('td').eq(7).text() != '') {
-                                unconverted = current_object.find('td').eq(7).text();
+                            if (current_object[i].find('td').eq(7).text() != '') {
+                                unconverted = current_object[i].find('td').eq(7).text();
                                 unconverted = parseFloat(unconverted.substring(1, unconverted.length));
 
                                 converted = convertPrice(unconverted, function(data){
-                                    current_object.find('td').eq(7).text(data).attr('title', 'Actual Earnings: $' + unconverted);
+                                    current_object[i].find('td').eq(7).text(data).attr('title', 'Actual Earnings: $' + unconverted);
                                 });
                             }
-                            if (current_object.find('td').eq(8).text() != '') {
-                                unconverted = current_object.find('td').eq(8).text();
+                            if (current_object[i].find('td').eq(8).text() != '') {
+                                unconverted = current_object[i].find('td').eq(8).text();
                                 unconverted = unconverted.substring(1, unconverted.length);
                                 converted = convertPrice(unconverted, function(data){
-                                    current_object.find('td').eq(8).text(data).attr('title', 'Actual Earnings: $' + unconverted);
+                                    current_object[i].find('td').eq(8).text(data).attr('title', 'Actual Earnings: $' + unconverted);
                                 });
                             }
                         }
@@ -210,8 +214,87 @@ $(document).ready(function() {
         }
     }
 
+    // CONVERT CURRENCIES IN EARNINGS TAB
+    if(localise_earnings_page != 'false') {
+        var pathname = window.location.pathname;
+        if(pathname.indexOf('/earnings/') > -1) {
+
+            // Generate new graph
+            var graph_data = $.parseJSON($('body script[id="graphdata"]').text());
+            var current_object, unconverted, converted, data_indexes, counter;
+            counter = 0;
+            data_indexes = graph_data.datasets[0]['data'].length;
+
+            $.each(graph_data.datasets[0]['data'], function(i, val){
+                if(val > 0) {
+                    // Localize
+                    if (openexchange == 'undefined') {
+                        return false;
+                    } else {
+                        current_object = $(this);
+                        unconverted = parseFloat(val);
+
+                        converted = convertPrice(unconverted, function (data) {
+                            if (parseFloat(data.replace(/[^0-9\.]/g, '')) > 0) {
+                                graph_data.datasets[0]['data'][i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
+                                counter++;
+                            }
+                        });
+                    }
+                } else {
+                    counter++;
+                }
+            });
+
+            var renderGraph = setInterval(function(){
+                if(data_indexes == counter) {
+                    $('.-sales').text('Sales Earnings ('+currency+')');
+
+                    var chart_data = {
+                        animationEasing: "easeInOutCirc",
+                        animationSteps: 60,
+                        scaleFontSize: 12,
+                        scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+                        scaleLabel: "<%=parseFloat(value).toLocaleString('en-EN', {style: 'currency', currency: '"+currency+"', minimumFractionDigits: 2})%>",
+                        scaleStartValue: 0,
+                        showTooltips: !1,
+                        bezierCurve: !1
+                    };
+
+                    $(".js-graph__canvas").remove();
+                    $('.graph__container').append('<canvas class="graph__canvas js-graph__canvas" width="964" height="300"></canvas>');
+
+                    var canvas = $(".graph__canvas").get(0).getContext('2d');
+                    new Chart(canvas).Line(graph_data, chart_data);
+
+                    clearInterval(renderGraph);
+                }
+            }, 100);
+
+            // Convert headers (This month, balance, total value)
+            convertPrice($('.earnings-widget__amount:eq(0)').text().substr(1), function(data){
+                $('.earnings-widget__amount:eq(0)').text(data);
+            });
+            convertPrice($('.earnings-widget__amount:eq(1)').text().substr(1), function(data){
+                $('.earnings-widget__amount:eq(1)').text(data);
+            });
+            convertPrice($('.earnings-widget__amount:eq(2)').text().substr(1), function(data){
+                $('.earnings-widget__amount:eq(2)').text(data);
+            });
+
+            // Convert prices in table
+            $('.table-general tbody, tfoot').find('tr').each(function(index){
+                current_object[index] = $(this);
+                convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
+                    current_object[index].find('td').eq(2).text(data);
+                });
+            });
+        }
+    }
+
     // SHOW LINKS IN REFERRALS PAGE
     if(create_hrefs != 'false') {
+        var pathname = window.location.pathname;
         if (pathname.indexOf('/referrals') > -1) {
             var source = '';
             var path = '';
@@ -307,3 +390,13 @@ $(document).ready(function() {
 
 
 }); /*End Document Ready*/
+
+var current_url = window.location.pathname;
+
+$(document).click(function() {
+    if(window.location.pathname.indexOf('/earnings/') > -1) {
+        if (current_url != window.location.pathname) {
+            location.reload();
+        }
+    }
+});

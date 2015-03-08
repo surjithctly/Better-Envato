@@ -1,6 +1,6 @@
 {
    "content_scripts": [ {
-      "js": [ "jquery.min.js", "plugins.js", "better-envato.js" ],
+      "js": [ "jquery.min.js", "plugins.js", "Chart.min.js", "better-envato.js" ],
       "css": ["envato-styles.css"],
       "matches": [ "*://*.themeforest.net/*", "*://*.codecanyon.net/*", "*://*.videohive.net/*", "*://*.audiojungle.net/*", "*://*.graphicriver.net/*", "*://*.photodune.net/*", "*://*.3docean.net/*", "*://*.activeden.net/*", "*://*.envato.com/*" ]
    } ],
