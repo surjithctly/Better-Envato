@@ -262,6 +262,8 @@ $(document).ready(function() {
             convertPrice($('.earnings-widget__amount:eq(2)').text().substr(1), function(data){
                 $('.earnings-widget__amount:eq(2)').text(data);
             });
+			// Reduce font size to avoid design breakage in local currency
+			$('.earnings-widget__amount').css('font-size','30px');
 
             // Convert prices in table
 			if(pathname.indexOf('/earnings/sales') > -1) {
