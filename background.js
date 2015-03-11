@@ -140,7 +140,7 @@ function sales_notification() {
 function play_sound() {
     if (localStorage.play_sound != 'false') {
         if ($('#cha-ching').length) $('#cha-ching').remove();
-        $('<audio id="cha-ching" autoplay><source src="cha-ching.ogg" type="audio/ogg"></source><source src="cha-ching.mp3" type="audio/mpeg"></source></audio>').appendTo('body');
+        $('<audio id="cha-ching" autoplay><source src="sound/cha-ching.ogg" type="audio/ogg"></source><source src="sound/cha-ching.mp3" type="audio/mpeg"></source></audio>').appendTo('body');
     }
     return false;
 }
@@ -151,18 +151,18 @@ function show_notification(new_earnings, item_price, first_name, sold_item, item
     var randomPraise = praiseArray[Math.floor(Math.random() * praiseArray.length)];
 
     var notification = new Notification(randomPraise + '! New Sale.', {
-        icon: '48.png',
+        icon: 'img/48.png',
         body: 'You just sold ' + sold_item + ' for $' + item_price
     });
 
     notification.onclick = function() {
         window.open("http://themeforest.net/statement");
     }
-
-    setTimeout(function() {
-        notification.close()
-    }, 60000);
-
+    if (localStorage.auto_hide_sales_notification != 'false') {
+		setTimeout(function() {
+			notification.close()
+		}, 15000);
+	}
 
 }
 
@@ -197,7 +197,7 @@ function comment_notification() {
     function play_notification() {
         if (localStorage.comment_sound != 'false') {
             if ($('#comment_sound').length) $('#comment_sound').remove();
-            $('<audio id="comment_sound" autoplay><source src="notification.ogg" type="audio/ogg"></source><source src="notification.mp3" type="audio/mpeg"></source></audio>').appendTo('body');
+            $('<audio id="comment_sound" autoplay><source src="sound/notification.ogg" type="audio/ogg"></source><source src="sound/notification.mp3" type="audio/mpeg"></source></audio>').appendTo('body');
         }
         return false;
     }
@@ -207,17 +207,19 @@ function comment_notification() {
     function show_comments(new_comment, new_comment_item, new_comment_url, comment_id_hash) {
 
         var c_notification = new Notification('New Comment for ' + new_comment_item, {
-            icon: '48.png',
+            icon: 'img/48.png',
             body: new_comment
         });
 
         c_notification.onclick = function() {
             window.open(new_comment_url + '/' + comment_id_hash);
         }
-
-        setTimeout(function() {
-            c_notification.close()
-        }, 15000);
+		
+        if (localStorage.auto_hide_comment_notification != 'false') {
+			setTimeout(function() {
+				c_notification.close()
+			}, 15000);
+		}
 
     }
 

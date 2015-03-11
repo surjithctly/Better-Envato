@@ -1,7 +1,7 @@
 {
    "content_scripts": [ {
-      "js": [ "jquery.min.js", "plugins.js", "Chart.min.js", "better-envato.js" ],
-      "css": ["envato-styles.css"],
+      "js": [ "js/jquery.min.js", "js/plugins.js", "js/Chart.min.js", "better-envato.js" ],
+      "css": ["css/envato-styles.css"],
       "matches": [ "*://*.themeforest.net/*", "*://*.codecanyon.net/*", "*://*.videohive.net/*", "*://*.audiojungle.net/*", "*://*.graphicriver.net/*", "*://*.photodune.net/*", "*://*.3docean.net/*", "*://*.activeden.net/*", "*://*.envato.com/*" ]
    } ],
 "browser_action": {
@@ -12,9 +12,9 @@
     },
    "description": "Make Envato better by adding some cool features",
    "icons": {
-      "128": "128.png",
-      "16": "16.png",
-      "48": "48.png"
+      "128": "img/128.png",
+      "16": "img/16.png",
+      "48": "img/48.png"
    },
    "manifest_version": 2,
    "name": "Better Envato",

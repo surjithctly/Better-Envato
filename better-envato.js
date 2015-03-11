@@ -7,7 +7,7 @@ var username, apikey, openexchange, currency, localise_earnings, localise_earnin
 
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings' ]
     },
     function(response) {
         username                = response.data.username;
@@ -20,6 +20,7 @@ chrome.runtime.sendMessage({
         hide_statement          = response.data.hide_statement;
         verify_purchase         = response.data.verify_purchase;
         create_hrefs            = response.data.create_hrefs;
+		hide_earnings            = response.data.hide_earnings;
     }
 );
 
@@ -76,6 +77,8 @@ function dollartToInr() {
 
     $.getJSON(conversionurl, function(data) {
         convertrate = data.rates[currency]; /*  * 0.975 Midmarket rate*/
+         
+		console.log(data);
 
         $.getJSON(posturl, function(data) {
             earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
@@ -96,6 +99,12 @@ function dollartToInr() {
             } else {
                 $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
             }
+			// Show rates only after converting rates.
+			// Also check the hide earnings option
+			if (hide_earnings != 'true') {
+				$('.header-logo-account__balance').show();
+			}
+
         });
     });
 }
@@ -110,6 +119,7 @@ function convertPrice(unconverted_price, handleData) {
     $.ajax({
         url: 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange,
         success:function(data){
+
             conversion_rate = data.rates[currency];
 
             if (currency == 'INR') {
@@ -382,7 +392,15 @@ $(document).ready(function() {
 
     });
 
+// Hide Author Earnings
+// Author is browsing in public and do not want to reveal his balance
+// Also if Currency convertion failed, Show after 1 sec.
 
+if (hide_earnings != 'true') {
+	setTimeout(function() {
+		 $('.header-logo-account__balance').show();
+		}, 1000);
+}
 
 }); /*End Document Ready*/
 
