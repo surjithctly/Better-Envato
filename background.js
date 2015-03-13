@@ -1,7 +1,7 @@
 // Show the config file on installation
 chrome.runtime.onInstalled.addListener(function(object) {
 
-    if (localStorage.firsttime != 'false' || localStorage.firsttime == 'undefined' ) {
+    if (localStorage.firsttime != 'false' || localStorage.firsttime == 'undefined' || !localStorage.firsttime ) {
     var optionsurl = chrome.extension.getURL("options.html");
     chrome.tabs.create({
         url: optionsurl
@@ -147,7 +147,7 @@ function play_sound() {
 
 function show_notification(new_earnings, item_price, first_name, sold_item, item) {
 
-    var praiseArray = ['Woohoo', 'Bravo', 'Wow', 'Ahoy', 'Yay', 'Yikes', 'Hooray', 'Whoa'];
+    var praiseArray = ['Woohoo', 'Bravo', 'Wow', 'Ahoy', 'Yay', 'Yikes', 'Hooray', 'Whoa', 'Woot', 'Oh joy', first_name];
     var randomPraise = praiseArray[Math.floor(Math.random() * praiseArray.length)];
 
     var notification = new Notification(randomPraise + '! New Sale.', {

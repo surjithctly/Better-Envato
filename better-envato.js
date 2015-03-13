@@ -99,11 +99,6 @@ function dollartToInr() {
             } else {
                 $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
             }
-			// Show rates only after converting rates.
-			// Also check the hide earnings option
-			if (hide_earnings != 'true') {
-				$('.header-logo-account__balance').show();
-			}
 
         });
     });
@@ -394,12 +389,9 @@ $(document).ready(function() {
 
 // Hide Author Earnings
 // Author is browsing in public and do not want to reveal his balance
-// Also if Currency convertion failed, Show after 1 sec.
 
-if (hide_earnings != 'true') {
-	setTimeout(function() {
-		 $('.header-logo-account__balance').show();
-		}, 1000);
+if (hide_earnings == 'true') {
+	$('.header-logo-account__balance').hide();
 }
 
 }); /*End Document Ready*/
