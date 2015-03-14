@@ -5,24 +5,20 @@ Created by: Surjith S M © 2015-2020
 */
 var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs;
 
-chrome.runtime.sendMessage({
-        method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings' ]
-    },
-    function(response) {
-        username                = response.data.username;
-        apikey                  = response.data.apikey;
-        openexchange            = response.data.openexchange;
-        currency                = response.data.currency;
-        localise_earnings       = response.data.localise_earnings;
-        localise_earnings_table = response.data.localise_earnings_table;
-        localise_earnings_page  = response.data.localise_earnings_page;
-        hide_statement          = response.data.hide_statement;
-        verify_purchase         = response.data.verify_purchase;
-        create_hrefs            = response.data.create_hrefs;
-		hide_earnings            = response.data.hide_earnings;
-    }
-);
+// Load options from Chrome's storage
+chrome.storage.sync.get(null, function(response){
+    username                = response.username;
+    apikey                  = response.apikey;
+    openexchange            = response.openexchange;
+    currency                = response.currency;
+    localise_earnings       = response.localise_earnings;
+    localise_earnings_table = response.localise_earnings_table;
+    localise_earnings_page  = response.localise_earnings_page;
+    hide_statement          = response.hide_statement;
+    verify_purchase         = response.verify_purchase;
+    create_hrefs            = response.create_hrefs;
+    hide_earnings           = response.hide_earnings;
+});
 
 $(document).ready(function() {
     if (localise_earnings != 'false') {
@@ -77,8 +73,8 @@ function dollartToInr() {
 
     $.getJSON(conversionurl, function(data) {
         convertrate = data.rates[currency]; /*  * 0.975 Midmarket rate*/
-         
-		console.log(data);
+
+		//console.log(data);
 
         $.getJSON(posturl, function(data) {
             earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
