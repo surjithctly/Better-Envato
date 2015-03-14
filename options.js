@@ -51,6 +51,19 @@ function save_options() {
         var value   = $(this).prop('checked').toString();
 
         save_option(name, value);
+
+        if(name == 'cache_currency_rate') {
+            // Fetch latest currency rate
+            get_option('openexchange', function(apikey){
+                var conversionurl       = 'http://openexchangerates.org/api/latest.json?app_id=' + apikey;
+                var current_timestamp   = Math.floor(Date.now() / 1000);
+                $.getJSON(conversionurl, function(data) {
+                    get_option('currency', function(currency){
+                        save_option('currency_rate', current_timestamp+'||'+data.rates[currency]);
+                    });
+                });
+            });
+        }
     });
 
     $(this).text('Saving...').removeClass("btn-success");
