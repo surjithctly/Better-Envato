@@ -1,8 +1,8 @@
 /*
-Name: Better Envato
-Keywords: make Envato Better
-Created by: Surjith S M © 2015-2020
-*/
+ Name: Better Envato
+ Keywords: make Envato Better
+ Created by: Surjith S M © 2015-2020
+ */
 var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs;
 
 // Load options from Chrome's storage
@@ -74,7 +74,7 @@ function dollartToInr() {
     $.getJSON(conversionurl, function(data) {
         convertrate = data.rates[currency]; /*  * 0.975 Midmarket rate*/
 
-		//console.log(data);
+        //console.log(data);
 
         $.getJSON(posturl, function(data) {
             earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
@@ -263,28 +263,28 @@ $(document).ready(function() {
             convertPrice($('.earnings-widget__amount:eq(2)').text().substr(1), function(data){
                 $('.earnings-widget__amount:eq(2)').text(data);
             });
-			// Reduce font size to avoid design breakage in local currency
-			$('.earnings-widget__amount').css('font-size','30px');
+            // Reduce font size to avoid design breakage in local currency
+            $('.earnings-widget__amount').css('font-size','30px');
 
             // Convert prices in table
-			if(pathname.indexOf('/earnings/sales') > -1) {
-				$('.table-general tbody, tfoot').find('tr').each(function(index){
-					current_object[index] = $(this);
-					convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
-						current_object[index].find('td').eq(2).text(data);
-					});
-				});
-			} else if(pathname.indexOf('/earnings/referrals') > -1) {
-				$('.table-general tbody, tfoot').find('tr').each(function(index){
-					current_object[index] = $(this);
-					convertPrice($(this).find('td').eq(4).text().substr(1), function(data){
-						current_object[index].find('td').eq(4).text(data);
-					});
-					convertPrice($(this).find('td').eq(5).text().substr(1), function(data){
-						current_object[index].find('td').eq(5).text(data);
-					});
-				});
-			}
+            if(pathname.indexOf('/earnings/sales') > -1) {
+                $('.table-general tbody, tfoot').find('tr').each(function(index){
+                    current_object[index] = $(this);
+                    convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
+                        current_object[index].find('td').eq(2).text(data);
+                    });
+                });
+            } else if(pathname.indexOf('/earnings/referrals') > -1) {
+                $('.table-general tbody, tfoot').find('tr').each(function(index){
+                    current_object[index] = $(this);
+                    convertPrice($(this).find('td').eq(4).text().substr(1), function(data){
+                        current_object[index].find('td').eq(4).text(data);
+                    });
+                    convertPrice($(this).find('td').eq(5).text().substr(1), function(data){
+                        current_object[index].find('td').eq(5).text(data);
+                    });
+                });
+            }
         }
     }
 
@@ -386,9 +386,9 @@ $(document).ready(function() {
 // Hide Author Earnings
 // Author is browsing in public and do not want to reveal his balance
 
-if (hide_earnings == 'true') {
-	$('.header-logo-account__balance').hide();
-}
+    if (hide_earnings == 'true') {
+        $('.header-logo-account__balance').hide();
+    }
 
 }); /*End Document Ready*/
 

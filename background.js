@@ -258,7 +258,7 @@ function comment_notification() {
 
         });
     });
-    }
+}
 
 /**
  * Saves option to Chrome.storage

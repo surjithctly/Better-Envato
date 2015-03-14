@@ -53,10 +53,10 @@ function save_options() {
         save_option(name, value);
     });
 
-	$(this).text('Saving...').removeClass("btn-success");
-	
-	setTimeout(function() {
-       $('#save-options-button').text('Options Saved');
+    $(this).text('Saving...').removeClass("btn-success");
+
+    setTimeout(function() {
+        $('#save-options-button').text('Options Saved');
     }, 700);
 
     get_option('reviewed', function(value){
@@ -100,14 +100,14 @@ function get_option(name, callback) {
  * Reset the save button
  */
 $('input, select').on('keyup click', function () {
-  $('#save-options-button').text('Save Options').addClass("btn-success");
+    $('#save-options-button').text('Save Options').addClass("btn-success");
 });
 
 
 /**
  * Store that the user has already been to the Web Store (:. we <3 them)
  */
- 
+
 $('body').on('click', '.fivestars', function () {
     save_option('reviewed', 'true');
     $('#rate-it').html('<div class="highlight love">You\'re <strong>awesome</strong> &hearts;');
