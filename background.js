@@ -28,7 +28,15 @@ chrome.runtime.onInstalled.addListener(function(object) {
     if(!isEmpty(localStorage)) {
         // localStorage is in use, so move all options from there to chrome.storage
         //delete localStorage.apikey;
-        //alert(JSON.stringify(localStorage)); @todo Continue
+
+        for(var i = 0; i < localStorage.length; i++) {
+            var name    = localStorage.key(i);
+            var value   = localStorage.getItem(localStorage.key(i));
+
+            save_option(name, value);
+
+            delete localStorage[name];
+        }
     }
 
 });
@@ -262,6 +270,7 @@ function save_option(name, value){
     chrome.storage.sync.set(object, function() {
         if(chrome.extension.lastError) {
             console.log('An error occured: ' + chrome.extension.lastError.message);
+            alert('An error occured: ' + chrome.extension.lastError.message);
             return false;
         } else {
             return true;
