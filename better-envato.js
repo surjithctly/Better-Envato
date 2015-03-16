@@ -37,11 +37,11 @@ chrome.storage.sync.get(null, function(response){
             var current_timestamp   = Math.floor(Date.now() / 1000);
             var day_ago_time        = current_timestamp - 86400;
 
-            if(last_cached_time < day_ago_time) {
+            if(exchange_rate[2] != currency || last_cached_time < day_ago_time) {
                 // Fetch latest currency rate
                 var conversionurl = 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange;
                 $.getJSON(conversionurl, function(data) {
-                    save_option('currency_rate', current_timestamp+'||'+data.rates[currency]);
+                    save_option('currency_rate', current_timestamp+'||'+data.rates[currency]+'||'+currency);
                 });
             }
         }
@@ -117,28 +117,66 @@ chrome.storage.sync.get(null, function(response){
                 });
             });
         } else {
-            $.getJSON(posturl, function (data) {
-                earningsdollar = data.account.available_earnings;
-                /*- 3  payoneer commision $3*/
-                finalearnings = earningsdollar * currency_rate.split('||')[1];
+            var exchange_rate       = currency_rate.split('||') || 1;
 
-                if (currency == 'INR') {
-                    currency_sign = '₹';
-                } else if (currency == 'EUR') {
-                    currency_sign = '€';
-                } else if (currency == 'GBP') {
-                    currency_sign = '£';
-                } else {
-                    currency_sign = currency;
-                }
+            var last_cached_time    = exchange_rate[0];
+            var last_exchange_rate  = exchange_rate[1];
+            var current_timestamp   = Math.floor(Date.now() / 1000);
+            var day_ago_time        = current_timestamp - 86400;
 
-                if (currency == 'INR') {
-                    $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
-                } else {
-                    $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
-                }
+            if(exchange_rate[2] != currency || last_cached_time < day_ago_time) {
+                // Fetch latest currency rate
+                var conversionurl = 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange;
+                $.getJSON(conversionurl, function(data) {
+                    save_option('currency_rate', current_timestamp+'||'+data.rates[currency]+'||'+currency);
 
-            });
+                    $.getJSON(posturl, function (data) {
+                        earningsdollar = data.account.available_earnings;
+                        /*- 3  payoneer commision $3*/
+                        finalearnings = earningsdollar * data.rates[currency];
+
+                        if (currency == 'INR') {
+                            currency_sign = '₹';
+                        } else if (currency == 'EUR') {
+                            currency_sign = '€';
+                        } else if (currency == 'GBP') {
+                            currency_sign = '£';
+                        } else {
+                            currency_sign = currency;
+                        }
+
+                        if (currency == 'INR') {
+                            $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                        } else {
+                            $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                        }
+
+                    });
+                });
+            } else {
+                $.getJSON(posturl, function (data) {
+                    earningsdollar = data.account.available_earnings;
+                    /*- 3  payoneer commision $3*/
+                    finalearnings = earningsdollar * currency_rate.split('||')[1];
+
+                    if (currency == 'INR') {
+                        currency_sign = '₹';
+                    } else if (currency == 'EUR') {
+                        currency_sign = '€';
+                    } else if (currency == 'GBP') {
+                        currency_sign = '£';
+                    } else {
+                        currency_sign = currency;
+                    }
+
+                    if (currency == 'INR') {
+                        $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                    } else {
+                        $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                    }
+
+                });
+            }
         }
     }
 
@@ -178,25 +216,60 @@ chrome.storage.sync.get(null, function(response){
                 }
             });
         } else {
-            if (currency == 'INR') {
-                currency_sign = '₹';
-            } else if (currency == 'EUR') {
-                currency_sign = '€';
-            } else if (currency == 'GBP') {
-                currency_sign = '£';
+            var exchange_rate       = currency_rate.split('||') || 1;
+
+            var last_cached_time    = exchange_rate[0];
+            var last_exchange_rate  = exchange_rate[1];
+            var current_timestamp   = Math.floor(Date.now() / 1000);
+            var day_ago_time        = current_timestamp - 86400;
+
+            if(exchange_rate[2] != currency || last_cached_time < day_ago_time) {
+                // Fetch latest currency rate
+                var conversionurl = 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange;
+                $.getJSON(conversionurl, function(data) {
+                    save_option('currency_rate', current_timestamp+'||'+data.rates[currency]+'||'+currency);
+
+                    if (currency == 'INR') {
+                        currency_sign = '₹';
+                    } else if (currency == 'EUR') {
+                        currency_sign = '€';
+                    } else if (currency == 'GBP') {
+                        currency_sign = '£';
+                    } else {
+                        currency_sign = currency;
+                    }
+
+                    converted_price = unconverted_price * currency_rate.split('||')[1];
+
+                    if (currency == 'INR') {
+                        converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
+                    } else {
+                        converted_price = currency_sign + ' ' + format_currency(converted_price);
+                    }
+
+                    handleData(converted_price);
+                });
             } else {
-                currency_sign = currency;
+                if (currency == 'INR') {
+                    currency_sign = '₹';
+                } else if (currency == 'EUR') {
+                    currency_sign = '€';
+                } else if (currency == 'GBP') {
+                    currency_sign = '£';
+                } else {
+                    currency_sign = currency;
+                }
+
+                converted_price = unconverted_price * currency_rate.split('||')[1];
+
+                if (currency == 'INR') {
+                    converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
+                } else {
+                    converted_price = currency_sign + ' ' + format_currency(converted_price);
+                }
+
+                handleData(converted_price);
             }
-
-            converted_price = unconverted_price * currency_rate.split('||')[1];
-
-            if (currency == 'INR') {
-                converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
-            } else {
-                converted_price = currency_sign + ' ' + format_currency(converted_price);
-            }
-
-            handleData(converted_price);
         }
     }
 
