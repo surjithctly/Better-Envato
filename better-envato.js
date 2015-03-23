@@ -5,6 +5,23 @@
  */
 var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, cache_currency_rate, currency_rate;
 
+/**
+ * Saves option to Chrome.storage
+ */
+function save_option(name, value){
+    var object      = {};
+    object[name]    = value;
+
+    chrome.storage.sync.set(object, function() {
+        if(chrome.extension.lastError) {
+            console.log('An error occured: ' + chrome.extension.lastError.message);
+            return false;
+        } else {
+            return true;
+        }
+    });
+}
+
 // Load options from Chrome's storage
 chrome.storage.sync.get(null, function(response){
     username                = response.username;
