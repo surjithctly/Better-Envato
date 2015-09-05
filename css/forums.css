@@ -1,0 +1,169 @@
+/*
+ *
+ * ENVATO FORUM CUSTOMIZATION
+ * BY SURJITH S M (surjithctly)
+ *
+ */
+
+
+/*
+ *
+ * GLOBAL PAGE
+ *
+ */
+
+.d-header {
+    background-color: #f4f4f4;
+}
+
+
+/*
+ *
+ * HOME PAGE
+ *
+ */
+
+.topic-list {
+    background-color: #fbfbfb;
+    border: 1px solid #e1e8ed;
+}
+
+.list-controls {
+    margin-bottom: 10px;
+}
+
+.topic-list:not(.categories) > tbody > tr:nth-child(even) td:first-child {
+    border-left: 0;
+}
+
+.topic-list:not(.categories) > tbody > tr:nth-child(even) td:last-child {
+    border-right: 0;
+}
+
+.topic-list td {
+    padding: 20px 5px;
+}
+
+.topic-list th:first-of-type,
+.topic-list td:first-of-type {
+    padding-left: 20px;
+}
+
+.topic-list:not(.categories) > tbody > tr:nth-child(even) td {
+    background-color: #fbfbfb;
+}
+
+.old-forum-loaded .discourse-tags,
+.thread-quick-links {
+    margin-left: 110px;
+}
+
+.topic-list .main-link {
+    box-sizing: border-box;
+    color: rgb(68, 68, 68);
+    text-align: left;
+    text-decoration: none;
+    border: 0px none rgb(68, 68, 68);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    line-height: 28px;
+    list-style: none outside none;
+    outline: rgb(68, 68, 68) none 0px;
+    vertical-align: top;
+}
+
+.topic-list .main-link .title {
+    font-size: 24px;
+}
+
+
+/*#A_1*/
+
+.topic-list .topic-excerpt,
+.topic-list .views,
+.topic-list .posters {
+    display: none;
+}
+
+
+/* .topic-list .category */
+
+.topic-list .posts {
+    width: 80px;
+}
+
+.topic-list .posts-map.badge-posts {
+    font-size: 24px;
+    background: #ECECEC;
+    border-radius: 4px;
+    display: block;
+    margin-top: 5px;
+    padding: 10px 0 25px!important;
+    position: relative;
+    width: 80px;
+}
+
+.topic-list .posts-map.badge-posts:after {
+    content: 'Replies';
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: auto;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: normal;
+    width: 80px;
+}
+
+.thread_thumbs {
+    float: left;
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin-right: 20px;
+}
+
+.thread-last-reply {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.topic-list .badge-notification.new-topic {
+    font-size: 14px;
+}
+
+.thread-quick-links {
+    font-size: 12px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.thread-quick-links div {
+    line-height: 1.7;
+}
+
+.show-more.has-topics {
+    top: 0;
+}
+
+.show-more.has-topics .alert {
+    padding: 13px 35px 12px 14px;
+}
+
+
+/*
+ *
+ * TOPIC PAGE
+ *
+ */
+
+.topic-body {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.topic-post .topic-avatar img {
+    border-radius: 0;
+}
+

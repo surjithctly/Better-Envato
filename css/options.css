@@ -1,35 +1,47 @@
 /*Options Page*/
 
 body {
-    background:#eee;
-    font-family:Arial, Helvetica, Sans-serif;
-    font-size:14px;
-    color:#3D3D3D;
+    background: #eee;
+    font-family: Arial, Helvetica, Sans-serif;
+    font-size: 14px;
+    color: #3D3D3D;
+    line-height: 1.5;
 }
 
 .settings {
-    background:#FFF;
-    margin:50px auto;
-    padding:30px;
-    max-width:800px;
+    background: #FFF;
+    margin: 50px auto;
+    padding: 30px;
+    max-width: 800px;
 }
 
 h1 {
-    text-align:center;
-    color:#313131;
+    text-align: center;
+    color: #313131;
+}
+
+h2 {
+    text-align: center;
+    color: #545454;
+    background: #F6F6F6;
+    border-bottom: 1px solid #EBEBEB;
+    padding: 10px 0;
+    margin-top: 30px;
+    margin-bottom: 25px;
+    font-size: 16px;
 }
 
 p {
-    color:#707070;
+    color: #707070;
 }
 
 a {
-    color:#53A2EC;
-    text-decoration:none;
+    color: #53A2EC;
+    text-decoration: none;
 }
 
 a:hover {
-    color:#2473BD;
+    color: #2473BD;
 }
 
 hr {
@@ -43,37 +55,39 @@ hr {
 }
 
 #options-area {
-    margin-top:50px;
+    margin-top: 50px;
 }
 
 .text-center {
-    text-align:center;
+    text-align: center;
 }
 
 .control-group {
-    margin-bottom:20px;
+    margin-bottom: 20px;
 }
 
 .control-label {
-    float:left;
-    margin:7px;
+    float: left;
+    margin: 7px;
 }
 
 .help-block {
-    font-size:12px;
+    font-size: 12px;
 }
 
 .controls {
-    margin-left:250px;
+    margin-left: 250px;
 }
 
-.controls input[type=text], .controls select {
-    padding:5px 10px;
-    border:solid 1px #CCC;
-    width:300px;
+.controls input[type=text],
+.controls select {
+    padding: 5px 10px;
+    border: solid 1px #CCC;
+    width: 300px;
 }
 
-select[disabled], input[disabled] {
+select[disabled],
+input[disabled] {
     cursor: not-allowed;
     background-color: #eee;
     opacity: 1;
@@ -98,20 +112,17 @@ select[disabled], input[disabled] {
     border: 1px solid transparent;
     border-radius: 4px;
     color: #939393;
-    -webkit-transition:all .1s linear;
-    transition:all .1s linear;
-    outline:none;
+    -webkit-transition: all .1s linear;
+    transition: all .1s linear;
+    outline: none;
 }
 
 .btn-success {
     background-color: #2cc76a;
     background-image: none;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    color:#FFF;
+    color: #FFF;
 }
-
-
-
 
 .highlight {
     background: #f5e9a3;
@@ -119,6 +130,17 @@ select[disabled], input[disabled] {
     -webkit-transition: background .1s linear;
     transition: background .1s linear;
 }
+
 .highlight.love {
     background: #f5a3cc;
 }
+
+.badge {
+    font-size: 10px;
+    font-weight: normal;
+    color: #FFF;
+    padding: 2px 6px;
+    background-color: #F97171;
+    border-radius: 3px;
+}
+
