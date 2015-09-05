@@ -3,27 +3,30 @@ Name: Better Envato
 Keywords: make Envato Better
 Created by: Surjith S M © 2015-2020
 */
-var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs;
-
+var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, old_forum_look, close_iframe_preview;
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings' ]
+        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings', 'old_forum_look', 'close_iframe_preview']
     },
     function(response) {
-        username                = response.data.username;
-        apikey                  = response.data.apikey;
-        openexchange            = response.data.openexchange;
-        currency                = response.data.currency;
-        localise_earnings       = response.data.localise_earnings;
+        username = response.data.username;
+        apikey = response.data.apikey;
+        openexchange = response.data.openexchange;
+        currency = response.data.currency;
+        localise_earnings = response.data.localise_earnings;
         localise_earnings_table = response.data.localise_earnings_table;
-        localise_earnings_page  = response.data.localise_earnings_page;
-        hide_statement          = response.data.hide_statement;
-        verify_purchase         = response.data.verify_purchase;
-        create_hrefs            = response.data.create_hrefs;
-		hide_earnings            = response.data.hide_earnings;
+        localise_earnings_page = response.data.localise_earnings_page;
+        hide_statement = response.data.hide_statement;
+        verify_purchase = response.data.verify_purchase;
+        create_hrefs = response.data.create_hrefs;
+        hide_earnings = response.data.hide_earnings;
+        old_forum_look = response.data.old_forum_look;
+        close_iframe_preview = response.data.close_iframe_preview;
     }
 );
-
+/*hide_forum_posts = response.data.hide_forum_posts;
+        forum_blacklist = response.data.forum_blacklist;
+        forum_whitelist = response.data.forum_whitelist;*/
 $(document).ready(function() {
     if (localise_earnings != 'false') {
         if (username == 'undefined' || apikey == 'undefined' || openexchange == 'undefined') {
@@ -32,9 +35,7 @@ $(document).ready(function() {
             dollartToInr();
         }
     }
-
 });
-
 //function for converting string into indian currency format
 function inr_currency(nStr) {
     nStr += '';
@@ -45,7 +46,6 @@ function inr_currency(nStr) {
     var z = 0;
     var len = String(x1).length;
     var num = parseInt((len / 2) - 1);
-
     while (rgx.test(x1)) {
         if (z > 0) {
             x1 = x1.replace(rgx, '$1' + ',' + '$2');
@@ -61,29 +61,22 @@ function inr_currency(nStr) {
     }
     return x1 + x2;
 }
-
 // GLOBAL CURRENCY FORMAT
 function format_currency(n) {
     return n.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
 }
 
 function dollartToInr() {
-    var posturl = 'http://marketplace.envato.com/api/edge/' + username + '/' + apikey + '/account.json';
+    var posturl = 'https://marketplace.envato.com/api/edge/' + username + '/' + apikey + '/account.json';
     var earningsdollar, finalearnings, convertrate;
-
-    var conversionurl = 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange;
-
+    var conversionurl = 'https://openexchangerates.org/api/latest.json?app_id=' + openexchange;
     // Use jQuery.ajax to get the latest exchange rates, with JSONP:
-
     $.getJSON(conversionurl, function(data) {
         convertrate = data.rates[currency]; /*  * 0.975 Midmarket rate*/
-         
-		console.log(data);
-
+        console.log(data);
         $.getJSON(posturl, function(data) {
             earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
             finalearnings = earningsdollar * convertrate;
-
             if (currency == 'INR') {
                 currency_sign = '₹';
             } else if (currency == 'EUR') {
@@ -93,30 +86,24 @@ function dollartToInr() {
             } else {
                 currency_sign = currency;
             }
-
             if (currency == 'INR') {
                 $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
             } else {
                 $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
             }
-
         });
     });
 }
 
 function convertPrice(unconverted_price, handleData) {
     var conversion_rate, converted_price;
-
-    if($.type(unconverted_price) === 'string') {
+    if ($.type(unconverted_price) === 'string') {
         unconverted_price = unconverted_price.replace(/[^0-9\.]/g, '');
     }
-
     $.ajax({
-        url: 'http://openexchangerates.org/api/latest.json?app_id=' + openexchange,
-        success:function(data){
-
+        url: 'https://openexchangerates.org/api/latest.json?app_id=' + openexchange,
+        success: function(data) {
             conversion_rate = data.rates[currency];
-
             if (currency == 'INR') {
                 currency_sign = '₹';
             } else if (currency == 'EUR') {
@@ -126,101 +113,92 @@ function convertPrice(unconverted_price, handleData) {
             } else {
                 currency_sign = currency;
             }
-
             converted_price = unconverted_price * conversion_rate;
-
             if (currency == 'INR') {
                 converted_price = currency_sign + ' ' + inr_currency(converted_price.toFixed(2));
             } else {
                 converted_price = currency_sign + ' ' + format_currency(converted_price);
             }
-
             handleData(converted_price);
         }
     });
 }
-
 $(document).ready(function() {
-
     // REMOVE STATEMENTS - AUTHOR FEE
     // CONVERT CURRENCIES
+    // TODO : SUPPORT PACKS LAUNCHED NEED RE_WORK
+    /*  if (hide_statement != 'false') {
+          var pathname        = window.location.pathname;
+          var amount          = 0;
+          var amount_string   = '';
+          var order_id        = 0;
+          var next_amount     = '';
 
-    if (hide_statement != 'false') {
-        var pathname        = window.location.pathname;
-        var amount          = 0;
-        var amount_string   = '';
-        var order_id        = 0;
-        var next_amount     = '';
+          var unconverted, converted, current_object = [], conversion_rate;
 
-        var unconverted, converted, current_object = [], conversion_rate;
+          if (pathname.indexOf('statement') > -1) {
+              $("#stored_statement").find("tr").each(function(i) {
 
-        if (pathname.indexOf('statement') > -1) {
-            $("#stored_statement").find("tr").each(function(i) {
+                  if ($(this).find("td").eq(3).find("span").text() == "Author Fee") {
 
-                if ($(this).find("td").eq(3).find("span").text() == "Author Fee") {
+                      order_id        = $(this).find('.statement__order_id').text();
+                      amount_string   = $(this).find('.statement__amount').text();
+                      amount          = parseFloat(amount_string.substring(1, amount_string.length));
+                      next_amount     = $(this).next().find('.statement__amount').text();
+                      next_amount     = parseFloat(next_amount.substring(1, next_amount.length));
 
-                    order_id        = $(this).find('.statement__order_id').text();
-                    amount_string   = $(this).find('.statement__amount').text();
-                    amount          = parseFloat(amount_string.substring(1, amount_string.length));
-                    next_amount     = $(this).next().find('.statement__amount').text();
-                    next_amount     = parseFloat(next_amount.substring(1, next_amount.length));
+                      amount          = amount + next_amount;
 
-                    amount          = amount + next_amount;
+                      $(this).next().find('.statement__amount').text('$' + amount.toFixed(2));
+                      $(this).hide();
+                  }
 
-                    $(this).next().find('.statement__amount').text('$' + amount.toFixed(2));
-                    $(this).hide();
-                }
+                  if(localise_earnings_table != 'false') {
+                      if (openexchange == 'undefined') {
+                          return false;
+                      } else {
+                          if ($(this).is(':visible')) {
+                              current_object[i] = $(this);
 
-                if(localise_earnings_table != 'false') {
-                    if (openexchange == 'undefined') {
-                        return false;
-                    } else {
-                        if ($(this).is(':visible')) {
-                            current_object[i] = $(this);
+                              if (current_object[i].find('td').eq(7).text() != '') {
+                                  unconverted = current_object[i].find('td').eq(7).text();
+                                  unconverted = parseFloat(unconverted.substring(1, unconverted.length));
 
-                            if (current_object[i].find('td').eq(7).text() != '') {
-                                unconverted = current_object[i].find('td').eq(7).text();
-                                unconverted = parseFloat(unconverted.substring(1, unconverted.length));
-
-                                converted = convertPrice(unconverted, function(data){
-                                    current_object[i].find('td').eq(7).text(data).attr('title', 'Actual Earnings: $' + unconverted);
-                                });
-                            }
-                            if (current_object[i].find('td').eq(8).text() != '') {
-                                unconverted = current_object[i].find('td').eq(8).text();
-                                unconverted = unconverted.substring(1, unconverted.length);
-                                converted = convertPrice(unconverted, function(data){
-                                    current_object[i].find('td').eq(8).text(data).attr('title', 'Actual Earnings: $' + unconverted);
-                                });
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
+                                  converted = convertPrice(unconverted, function(data){
+                                      current_object[i].find('td').eq(7).text(data).attr('title', 'Actual Earnings: $' + unconverted);
+                                  });
+                              }
+                              if (current_object[i].find('td').eq(8).text() != '') {
+                                  unconverted = current_object[i].find('td').eq(8).text();
+                                  unconverted = unconverted.substring(1, unconverted.length);
+                                  converted = convertPrice(unconverted, function(data){
+                                      current_object[i].find('td').eq(8).text(data).attr('title', 'Actual Earnings: $' + unconverted);
+                                  });
+                              }
+                          }
+                      }
+                  }
+              });
+          }
+      } */
     // CONVERT CURRENCIES IN EARNINGS TAB
-    if(localise_earnings_page != 'false') {
+    if (localise_earnings_page != 'false') {
         var pathname = window.location.pathname;
-        if(pathname.indexOf('/earnings/') > -1) {
-
+        if (pathname.indexOf('/earnings/') > -1) {
             // Generate new graph
             var graph_data = $.parseJSON($('body script[id="graphdata"]').text());
             var current_object, unconverted, converted, data_indexes, counter;
             counter = 0;
             data_indexes = graph_data.datasets[0]['data'].length;
-
-            $.each(graph_data.datasets[0]['data'], function(i, val){
-                if(val > 0) {
+            $.each(graph_data.datasets[0]['data'], function(i, val) {
+                if (val > 0) {
                     // Localize
                     if (openexchange == 'undefined') {
                         return false;
                     } else {
                         current_object = $(this);
                         unconverted = parseFloat(val);
-
-                        converted = convertPrice(unconverted, function (data) {
+                        converted = convertPrice(unconverted, function(data) {
                             if (parseFloat(data.replace(/[^0-9\.]/g, '')) > 0) {
                                 graph_data.datasets[0]['data'][i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
                                 counter++;
@@ -231,85 +209,74 @@ $(document).ready(function() {
                     counter++;
                 }
             });
-
-            var renderGraph = setInterval(function(){
-                if(data_indexes == counter) {
-                    $('.-sales').text('Sales Earnings ('+currency+')');
-
+            var renderGraph = setInterval(function() {
+                if (data_indexes == counter) {
+                    $('.-sales').text('Sales Earnings (' + currency + ')');
                     var chart_data = {
                         animationEasing: "easeInOutCirc",
                         animationSteps: 60,
                         scaleFontSize: 12,
                         scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-                        scaleLabel: "<%=parseFloat(value).toLocaleString('en-EN', {style: 'currency', currency: '"+currency+"', minimumFractionDigits: 2})%>",
+                        scaleLabel: "<%=parseFloat(value).toLocaleString('en-EN', {style: 'currency', currency: '" + currency + "', minimumFractionDigits: 2})%>",
                         scaleStartValue: 0,
                         showTooltips: !1,
                         bezierCurve: !1
                     };
-
                     $(".js-graph__canvas").remove();
                     $('.graph__container').append('<canvas class="graph__canvas js-graph__canvas" width="964" height="300"></canvas>');
-
                     var canvas = $(".graph__canvas").get(0).getContext('2d');
                     new Chart(canvas).Line(graph_data, chart_data);
-
                     clearInterval(renderGraph);
                 }
             }, 100);
-
             // Convert headers (This month, balance, total value)
-            convertPrice($('.earnings-widget__amount:eq(0)').text().substr(1), function(data){
+            convertPrice($('.earnings-widget__amount:eq(0)').text().substr(1), function(data) {
                 $('.earnings-widget__amount:eq(0)').text(data);
             });
-            convertPrice($('.earnings-widget__amount:eq(1)').text().substr(1), function(data){
+            convertPrice($('.earnings-widget__amount:eq(1)').text().substr(1), function(data) {
                 $('.earnings-widget__amount:eq(1)').text(data);
             });
-            convertPrice($('.earnings-widget__amount:eq(2)').text().substr(1), function(data){
+            convertPrice($('.earnings-widget__amount:eq(2)').text().substr(1), function(data) {
                 $('.earnings-widget__amount:eq(2)').text(data);
             });
-			// Reduce font size to avoid design breakage in local currency
-			$('.earnings-widget__amount').css('font-size','30px');
-
+            // Reduce font size to avoid design breakage in local currency
+            $('.earnings-widget__amount').css('font-size', '30px');
             // Convert prices in table
-			if(pathname.indexOf('/earnings/sales') > -1) {
-				$('.table-general tbody, tfoot').find('tr').each(function(index){
-					current_object[index] = $(this);
-					convertPrice($(this).find('td').eq(2).text().substr(1), function(data){
-						current_object[index].find('td').eq(2).text(data);
-					});
-				});
-			} else if(pathname.indexOf('/earnings/referrals') > -1) {
-				$('.table-general tbody, tfoot').find('tr').each(function(index){
-					current_object[index] = $(this);
-					convertPrice($(this).find('td').eq(4).text().substr(1), function(data){
-						current_object[index].find('td').eq(4).text(data);
-					});
-					convertPrice($(this).find('td').eq(5).text().substr(1), function(data){
-						current_object[index].find('td').eq(5).text(data);
-					});
-				});
-			}
+            if (pathname.indexOf('/earnings/sales') > -1) {
+                $('.table-general tbody, tfoot').find('tr').each(function(index) {
+                    current_object[index] = $(this);
+                    convertPrice($(this).find('td').eq(2).text().substr(1), function(data) {
+                        current_object[index].find('td').eq(2).text(data);
+                    });
+                });
+            } else if (pathname.indexOf('/earnings/referrals') > -1) {
+                $('.table-general tbody, tfoot').find('tr').each(function(index) {
+                    current_object[index] = $(this);
+                    convertPrice($(this).find('td').eq(4).text().substr(1), function(data) {
+                        current_object[index].find('td').eq(4).text(data);
+                    });
+                    convertPrice($(this).find('td').eq(5).text().substr(1), function(data) {
+                        current_object[index].find('td').eq(5).text(data);
+                    });
+                });
+            }
         }
     }
-
     // SHOW LINKS IN REFERRALS PAGE
-    if(create_hrefs != 'false') {
+    if (create_hrefs != 'false') {
         var pathname = window.location.pathname;
         if (pathname.indexOf('/referrals') > -1) {
             var source = '';
             var path = '';
             var url = '';
-
-            var ifTableExists = setInterval(function () {
+            var ifTableExists = setInterval(function() {
                 if ($('#results').length) {
                     clearInterval(ifTableExists);
-                    $('#results').find('tr').each(function () {
+                    $('#results').find('tr').each(function() {
                         if ($(this).find('td').eq(1).text() != '(not set)') {
                             source = $(this).find('td').eq(0).text();
                             path = $(this).find('td').eq(1).text();
-
                             url = '<a href="http://' + source + path + '" target="_blank">' + path + '</a>';
-
                             $(this).find('td').eq(1).html(url);
                         }
                     });
@@ -317,22 +284,16 @@ $(document).ready(function() {
             }, 100);
         }
     }
-
     // VERIFY PURCHASE
-
-    if (verify_purchase != 'false') {
+    if (verify_purchase == 'true') {
         var pathname = window.location.pathname;
         if (pathname.indexOf('author_dashboard') > -1) {
-            var verify_html_block = '<div class="box--topbar"> <h2>Verify Purchase Code</h2></div><div class="box--hard-top"> <form id="verifypurchase" method="GET"> <fieldset class="vertical-form"> <div class="input-group">  <div class="inputs"> <input type="text" name="purchase_code" id="purchase_code" class="inline" style="width: 60.81967%;" placeholder="Enter Purchase Code here"> <button type="submit" class="btn-icon submit auto-width">Verify Purchase Code</button> </div></div></fieldset></form> <div class="loading"></div></div>';
-
+            var verify_html_block = '<div class="box--topbar"> <h2>Verify Purchase Code <small class="pull-right">Better Envato</small></h2></div><div class="box--hard-top"> <form id="verifypurchase" method="GET"> <fieldset class="vertical-form"> <div class="input-group">  <div class="inputs"> <input type="text" name="purchase_code" id="purchase_code" class="inline" style="width: 60.81967%;" placeholder="Enter Purchase Code here"> <button type="submit" class="btn-icon submit auto-width">Verify Purchase Code</button> </div></div></fieldset></form> <div class="loading"></div></div>';
             //$("#content .content-s").append(verify_html_block);
             $(verify_html_block).insertBefore("#content .content-s .content-s");
             //alert('done');
         }
     }
-
-
-
     $("#verifypurchase").submit(function(e) {
         e.preventDefault();
         var purchase_code = $("#purchase_code");
@@ -346,9 +307,7 @@ $(document).ready(function() {
         }
         var item_purchase_code = purchase_code.val();
         $(".loading").fadeIn("slow").html("<p>Please wait...</p>");
-
-        var posturl = 'http://marketplace.envato.com/api/v3/' + username + '/' + apikey + '/verify-purchase:' + item_purchase_code + '.json';
-
+        var posturl = 'https://marketplace.envato.com/api/v3/' + username + '/' + apikey + '/verify-purchase:' + item_purchase_code + '.json';
         $.ajax({
             type: 'GET',
             url: posturl,
@@ -357,49 +316,153 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(data) {
-
                 if (data['verify-purchase'].buyer == '' || data['verify-purchase'].buyer == null) {
-
-
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. That was a wrong verification code! </p>');
-
                 } else if (data.code == 'not_authenticated') {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. Username and/or API Key is invalid. </p>');
                 } else {
-
                     var buyer = data['verify-purchase'].buyer;
                     var item_name = data['verify-purchase'].item_name;
                     var licence = data['verify-purchase'].licence;
                     var timestamp = data['verify-purchase'].created_at;
-
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0;"><a href="http://themeforest.net/user/' + buyer + '" target="_blank">' + buyer + '</a>  purchased a ' + licence + ' of ' + item_name + ' ' + $.timeago(timestamp) + '</p>');
-
-
                 }
-
             },
-
             error: function(data) {
                 $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. Something went wrong! </p>');
             }
-
         });
-
     });
+    // Hide Author Earnings
+    // Author is browsing in public and do not want to reveal his balance
+    if (hide_earnings == 'true') {
+        $('.header-logo-account__balance').hide();
+    }
+    /* OLD FORUM LOOK */
+    if (old_forum_look == 'true') {
+        var pathname = window.location.href;
+        if (pathname.indexOf('forums.envato') > -1) {
+            // insert styles from manifest :)
+            // DomChange Function
+            var observeDOM = (function() {
+                var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
+                    eventListenerSupported = window.addEventListener;
+                return function(obj, callback) {
+                    if (MutationObserver) {
+                        // define a new observer
+                        var obs = new MutationObserver(function(mutations, observer) {
+                            if (mutations[0].addedNodes.length || mutations[0].removedNodes.length)
+                                callback();
+                        });
+                        // have the observer observe foo for changes in children
+                        obs.observe(obj, {
+                            childList: true,
+                            subtree: true
+                        });
+                    } else if (eventListenerSupported) {
+                        obj.addEventListener('DOMNodeInserted', callback, false);
+                        obj.addEventListener('DOMNodeRemoved', callback, false);
+                    }
+                }
+            })();
+            // Cut URL Part
+            function cutUrl(str) {
+                var matched = str.match(/([^/]*\/){4}/);
+                return matched ? matched[0] : str /* or null if you wish */ ;
+            }
+            var poster_avatar,
+                poster_avatar_big,
+                last_reply_avatar,
+                last_reply_avatar_med,
+                started_by_name,
+                last_reply_name,
+                started_by_url,
+                last_reply_url;
+            //$('.topic-list thead tr').prepend('<th>Avatar</th>')
+            function showAvatars(thisObj) {
+                poster_avatar = $('.posters a:first-child img', thisObj).attr('src');
+                poster_avatar_big = poster_avatar.replace("25", "80");
+                last_reply_avatar = $('.posters .latest img', thisObj).attr('src');
+                last_reply_avatar_mid = last_reply_avatar.replace("25", "40");
+                started_by_name = $('.posters a:first-child', thisObj).data('user-card');
+                last_reply_name = $('.posters .latest', thisObj).data('user-card');
+                started_by_url = cutUrl($('.main-link .title', thisObj).attr('href'));
+                last_reply_url = $('.activity a', thisObj).attr('href');
+                $('.main-link', thisObj).prepend('<div class="thread_thumbs"><img src="' + poster_avatar_big + '" class="thread-started-by"><img src="' + last_reply_avatar_mid + '" class="thread-last-reply"></div>');
+                if ($(".topic-post-badges", thisObj).length) {
+                    $(".main-link .topic-post-badges", thisObj).after('<div class="thread-quick-links"></div>');
+                } else {
+                    $(".main-link .title", thisObj).after('<div class="thread-quick-links"></div>');
+                }
+                $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>')
+                $('.topic-list-item').addClass('old-forum-loaded');
+            }
 
-// Hide Author Earnings
-// Author is browsing in public and do not want to reveal his balance
+            function hideCustomTags(thisObj) {
+                var foundtags = [];
+                $('.discourse-tag', thisObj).each(function() {
+                    foundtags.push($(this).text());
+                });
+                for (var i = 0; i < foundtags.length; i++) {
+                    if (forum_blacklist.indexOf(foundtags[i]) > -1) {
+                        thisObj.hide();
+                    }
+                }
+                for (var g = 0; g < foundtags.length; g++) {
+                    if (forum_whitelist.indexOf(foundtags[g]) > -1) {
+                        thisObj.show();
+                    }
+                }
+            }
+            $('.topic-list-item').each(function() {
+                showAvatars($(this));
+            });
+            observeDOM(document.getElementById('main-outlet'), function() {
+                setTimeout(function() {
+                    $('.topic-list-item').not('.old-forum-loaded').each(function() {
+                        showAvatars($(this));
+                    });
+                }, 1000)
+            });
+            /*if (hide_forum_posts == 'true') {
+                $('.topic-list-item').each(function() {
+                    hideCustomTags($(this));
+                });
+                observeDOM(document.getElementById('list-area'), function() {
+                    setTimeout(function() {
+                        $('.topic-list-item').each(function() {
+                            hideCustomTags($(this));
+                        });
+                    }, 1000)
+                });
+            }*/
+        } /*end pathname fn*/
+    } /*end if ole forum*/
+    /*
+     *
+     * Auto Close Item Preview Frame
+     *
+     */
+    if (close_iframe_preview == 'true') {
+        //do this
+        checkPreviewURL();
 
-if (hide_earnings == 'true') {
-	$('.header-logo-account__balance').hide();
-}
+        function checkPreviewURL() {
+            var pathname = window.location.pathname;
+            if (pathname.indexOf('/full_screen_preview/') > -1) {
+                var originalpath = $('body > iframe').attr('src');
+                removeiframe(originalpath);
+            }
+        }
 
+        function removeiframe(originalpath) {
+            top.location.replace(originalpath);
+        }
+    }
 }); /*End Document Ready*/
-
 var current_url = window.location.pathname;
-
 $(document).click(function() {
-    if(window.location.pathname.indexOf('/earnings/') > -1) {
+    if (window.location.pathname.indexOf('/earnings/') > -1) {
         if (current_url != window.location.pathname) {
             location.reload();
         }
