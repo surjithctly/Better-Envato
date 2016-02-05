@@ -9,7 +9,7 @@
 
     <div class="settings">
         <h1>Better Envato</h1>
-        <p class="text-center">Make Envato Better by adding some cool features.
+        <p class="text-center">Make Envato Market Better by adding some cool features.
             <br> Made with &hearts; by <a href="http://themeforest.net/user/surjithctly?utm_source=better_envato_options" target="_blank">Surjith S M</a></p>
 
         <div id="rate-it"> </div>
@@ -26,11 +26,14 @@
                             <input type="text" name="username" id="username">
                         </div>
                     </div>
+
                     <div class="control-group">
-                        <label class="control-label" for="apikey">Envato API Key</label>
+                        <label class="control-label" for="personal_token">Envato API Personal Token</label>
                         <div class="controls">
-                            <input type="text" name="apikey" id="apikey">
+                            <input type="text" name="personal_token" id="personal_token">
+                            <p class="help-block">Get your Envato Personal Token from <a href="https://build.envato.com/create-token/" target="_blank">build.envato.com</a> (Please tick all options) </p>
                         </div>
+
                     </div>
 
                     <h2>Desktop Notifications</h2>
@@ -290,37 +293,38 @@
                         </div>
                     </div>
 
-                    <!--  <hr>
-                   <div class="control-group">
-                       <label class="control-label" for="hide_forum_posts">Hide Posts</label>
-                       <div class="controls">
-                           <div class="checkbox">
-                               <label>
-                                   <input type="checkbox" id="hide_forum_posts" name="hide_forum_posts"> Hide unwanted posts from Forum list </label>
-                           </div>
-                   
-                           <p class="help-block">Please add Blacklist &amp; Whitelist Tags First. <strong>Separated by comma</strong>.
-                               <br>
-                               <br> Available Tags :
-                               <br> <code>3d, audio, code, collaboration, freelancing, graphics, photography, video, web_design, wordpress</code> </p>
-                       </div>
-                   </div>
-                   
-                   <div class="control-group">
-                       <label class="control-label" for="forum_blacklist">Blacklist Tags</label>
-                       <div class="controls">
-                           <input type="text" name="forum_blacklist" id="forum_blacklist" placeholder="eg: 3d, audio, video">
-                           <p class="help-block">Posts with Blacklisted tags will <strong>not</strong> show in forum list</p>
-                       </div>
-                   </div>
-                   
-                   <div class="control-group">
-                       <label class="control-label" for="forum_whitelist">Whitelist Tags</label>
-                       <div class="controls">
-                           <input type="text" name="forum_whitelist" id="forum_whitelist" placeholder="eg: code, web_design, wordpress">
-                           <p class="help-block">Whitelisted Tags will always show (if posts mixed with blacklisted tags)</p>
-                       </div>
-                   </div> -->
+                    <hr>
+                    <div class="control-group">
+                        <label class="control-label" for="hide_forum_posts">Hide Posts</label>
+                        <div class="controls">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="hide_forum_posts" name="hide_forum_posts"> Hide unwanted posts from Forum list </label>
+                            </div>
+
+                            <p class="help-block">Please add Blacklist &amp; Whitelist Tags First. <strong>Separated by comma</strong>.
+                                <br>
+                                <br>
+                                <br> Available Tags : (All tags available in forums)
+                                <br> <code>3d, audio, code, graphics, photography, video, web_design, wordpress</code> </p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="forum_blacklist">Blacklist Tags</label>
+                        <div class="controls">
+                            <input type="text" name="forum_blacklist" id="forum_blacklist" placeholder="eg: 3d, audio, video">
+                            <p class="help-block">Posts with Blacklisted tags will <strong>not</strong> show in forum list</p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="forum_whitelist">Whitelist Tags</label>
+                        <div class="controls">
+                            <input type="text" name="forum_whitelist" id="forum_whitelist" placeholder="eg: code, web_design, wordpress">
+                            <p class="help-block">Whitelisted Tags will always show (if posts mixed with blacklisted tags)</p>
+                        </div>
+                    </div>
 
                     <h2>Item Pages <small class="badge">NEW</small></h2>
 
@@ -346,16 +350,16 @@
                         </div>
                     </div>
                     <hr>
-                    <div class="control-group">
-                        <label class="control-label" for="hide_statement">Statement Page</label>
-                        <div class="controls">
-                            <div class="checkbox">
-                                <label style="opacity:0.5">
-                                    <input type="checkbox" id="hide_statement" name="hide_statement" disabled> Hide Author Fee row from statement page (Support Pack launched, Need Rework) </label>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
+                    <!--        <div class="control-group">
+                 <label class="control-label" for="hide_statement">Statement Page</label>
+                 <div class="controls">
+                     <div class="checkbox">
+                         <label style="opacity:0.5">
+                             <input type="checkbox" id="hide_statement" name="hide_statement" disabled> Hide Author Fee row from statement page (Support Pack launched, Need Rework) </label>
+                     </div>
+                 </div>
+             </div>
+             <hr> -->
                     <div class="control-group">
                         <label class="control-label" for="create_hrefs">Analytics Page</label>
                         <div class="controls">
@@ -371,7 +375,7 @@
                         <div class="controls">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" id="hide_earnings" name="hide_earnings"> Hide Earnings from the header (esp. if you are in a coffee shop) </label>
+                                    <input type="checkbox" id="hide_earnings" name="hide_earnings"> Hide Earnings from the header (esp. if you are in a public place) </label>
                             </div>
                         </div>
                     </div>

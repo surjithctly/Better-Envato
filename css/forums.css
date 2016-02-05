@@ -167,3 +167,85 @@
     border-radius: 0;
 }
 
+.topic-post .topic-avatar .contents:hover .user-quick-links-avatar {
+    display: block;
+}
+
+.topic-post .topic-body {
+    z-index: 0;
+}
+
+.user-quick-links-avatar {
+    display: none;
+    position: absolute;
+    top: 70px
+}
+
+.inner-quick-links:before {
+    background-color: #000;
+    content: " ";
+    height: 20px;
+    left: 10px;
+    position: absolute;
+    top: -10px;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    width: 20px
+}
+
+.inner-quick-links {
+    background-color: #000;
+    box-shadow: 0 0 0 1px #454547 inset;
+    font-size: 11px;
+    min-width: 150px;
+    padding: 10px;
+    position: relative;
+    text-align: left;
+    top: 25px;
+    z-index: 1000
+}
+
+.inner-quick-links a.user-portfolio-link {
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding-bottom: 4px;
+    padding-top: 4px
+}
+
+.inner-quick-links a {
+    display: block
+}
+
+.market-portfolio-link {
+    float: left;
+    font-size: 12px;
+}
+
+.topic-badges {
+    height: 75px;
+    overflow: hidden;
+    padding-top: 8px;
+    margin-bottom: 20px;
+}
+
+.topic-badges img {
+    margin: 2px 4px;
+    width: 30px
+}
+
+a.expand-badges {
+    display: block;
+    font-size: 12px;
+    margin-top: -15px;
+    padding-bottom: 20px;
+    text-align: center
+}
+
+.topic-avatar {
+    width: 85px;
+    padding-right: 10px;
+    min-height: 210px;
+}
+

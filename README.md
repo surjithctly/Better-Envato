@@ -14,7 +14,7 @@ Envato Desktop Sales/Comment Notification is a background app and will work even
 To use this extension, You will need:
 
 1. Your envato username
-2. Envato API Key (Settings => API Keys)
+2. Envato Personal Token (https://build.envato.com/create-token/) Please tick all checkboxes when creating new token
 
 For Localize Earnings:
 1. Open Exchange Rates API Key ( https://openexchangerates.org/signup/free )

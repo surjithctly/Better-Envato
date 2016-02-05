@@ -1,16 +1,16 @@
 /*
 Name: Better Envato
-Keywords: make Envato Better
+Keywords: Make Envato Better
 Created by: Surjith S M © 2015-2020
 */
-var username, apikey, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, old_forum_look, close_iframe_preview;
+var username, personal_token, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, old_forum_look, hide_forum_posts, forum_blacklist, forum_whitelist, close_iframe_preview;
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "apikey", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings', 'old_forum_look', 'close_iframe_preview']
+        keys: ["username", "personal_token", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings', 'old_forum_look', 'hide_forum_posts', 'forum_blacklist', 'forum_whitelist', 'close_iframe_preview']
     },
     function(response) {
         username = response.data.username;
-        apikey = response.data.apikey;
+        personal_token = response.data.personal_token;
         openexchange = response.data.openexchange;
         currency = response.data.currency;
         localise_earnings = response.data.localise_earnings;
@@ -22,20 +22,67 @@ chrome.runtime.sendMessage({
         hide_earnings = response.data.hide_earnings;
         old_forum_look = response.data.old_forum_look;
         close_iframe_preview = response.data.close_iframe_preview;
+        hide_forum_posts = response.data.hide_forum_posts;
+        forum_blacklist = response.data.forum_blacklist;
+        forum_whitelist = response.data.forum_whitelist;
     }
 );
 /*hide_forum_posts = response.data.hide_forum_posts;
         forum_blacklist = response.data.forum_blacklist;
         forum_whitelist = response.data.forum_whitelist;*/
+
 $(document).ready(function() {
+
+    if (personal_token == 'undefined' || personal_token == "" || personal_token == "null") {
+        console.log('%c Better Envato : Please add Envato API Token to make this plugin work.', 'color:red; font-weight:bold; font-size:18px;')
+    }
+
     if (localise_earnings != 'false') {
-        if (username == 'undefined' || apikey == 'undefined' || openexchange == 'undefined') {
+        if (username == 'undefined' || personal_token == 'undefined' || openexchange == 'undefined') {
             return false;
         } else {
             dollartToInr();
         }
     }
+
+    if (personal_token == 'undefined' || personal_token == null || personal_token == '') {
+
+        var pathname = window.location.pathname;
+        if (pathname.indexOf('author_dashboard') > -1) {
+            var options_url = chrome.extension.getURL('options.html');
+            var verify_html_block = '<div class="e-alert-box"> <div class="e-alert-box__icon"> <i class="e-icon -icon-flag"></i> </div> <div class="e-alert-box__message"> <p class="t-body -size-m h-remove-margin"><strong>Better Envato Extension</strong> <br><br> Hello, Please create a new please create new Envato API <a href="https://build.envato.com/create-token/" target="_blank">Personal Token</a> (please tick all options) add add the same in the Better Envato <a href="' + options_url + '" target="_blank">Options page</a>. Otherwise the plugin will not work <br> <br> ~Surjith </p>  </div> </div>';
+            //$("#content .content-s").append(verify_html_block);
+            $(verify_html_block).insertBefore("#content .content-s .content-s");
+            //alert('done');
+        }
+
+    }
+
 });
+
+/* SAMPLE NEW API CALL */
+
+/*
+
+        jQuery.ajax({
+            url: posturl,
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + personal_token
+            },
+            success: function(data) {
+               
+            },
+            error: function(data) {
+                response = JSON.parse(data.responseText);
+                console.log("Error: ", data);
+            }
+        });
+
+
+
+*/
+
 //function for converting string into indian currency format
 function inr_currency(nStr) {
     nStr += '';
@@ -67,31 +114,44 @@ function format_currency(n) {
 }
 
 function dollartToInr() {
-    var posturl = 'https://marketplace.envato.com/api/edge/' + username + '/' + apikey + '/account.json';
+    var posturl = 'https://api.envato.com/v1/market/private/user/account.json';
     var earningsdollar, finalearnings, convertrate;
     var conversionurl = 'https://openexchangerates.org/api/latest.json?app_id=' + openexchange;
+
     // Use jQuery.ajax to get the latest exchange rates, with JSONP:
     $.getJSON(conversionurl, function(data) {
         convertrate = data.rates[currency]; /*  * 0.975 Midmarket rate*/
-        console.log(data);
-        $.getJSON(posturl, function(data) {
-            earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
-            finalearnings = earningsdollar * convertrate;
-            if (currency == 'INR') {
-                currency_sign = '₹';
-            } else if (currency == 'EUR') {
-                currency_sign = '€';
-            } else if (currency == 'GBP') {
-                currency_sign = '£';
-            } else {
-                currency_sign = currency;
-            }
-            if (currency == 'INR') {
-                $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
-            } else {
-                $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+
+        jQuery.ajax({
+            url: posturl,
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + personal_token
+            },
+            success: function(data) {
+                earningsdollar = data.account.available_earnings; /*- 3  payoneer commision $3*/
+                finalearnings = earningsdollar * convertrate;
+                if (currency == 'INR') {
+                    currency_sign = '₹';
+                } else if (currency == 'EUR') {
+                    currency_sign = '€';
+                } else if (currency == 'GBP') {
+                    currency_sign = '£';
+                } else {
+                    currency_sign = currency;
+                }
+                if (currency == 'INR') {
+                    $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                } else {
+                    $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                }
+            },
+            error: function(data) {
+                response = JSON.parse(data.responseText);
+                console.log("Error: ", data);
             }
         });
+
     });
 }
 
@@ -181,7 +241,11 @@ $(document).ready(function() {
               });
           }
       } */
-    // CONVERT CURRENCIES IN EARNINGS TAB
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                        CONVERT CURRENCIES IN EARNINGS TAB    
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
     if (localise_earnings_page != 'false') {
         var pathname = window.location.pathname;
         if (pathname.indexOf('/earnings/') > -1) {
@@ -262,7 +326,11 @@ $(document).ready(function() {
             }
         }
     }
-    // SHOW LINKS IN REFERRALS PAGE
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            SHOW LINKS IN REFERRALS PAGE
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
     if (create_hrefs != 'false') {
         var pathname = window.location.pathname;
         if (pathname.indexOf('/referrals') > -1) {
@@ -284,7 +352,11 @@ $(document).ready(function() {
             }, 100);
         }
     }
-    // VERIFY PURCHASE
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                VERIFY PURCHASE CODE
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
     if (verify_purchase == 'true') {
         var pathname = window.location.pathname;
         if (pathname.indexOf('author_dashboard') > -1) {
@@ -307,7 +379,8 @@ $(document).ready(function() {
         }
         var item_purchase_code = purchase_code.val();
         $(".loading").fadeIn("slow").html("<p>Please wait...</p>");
-        var posturl = 'https://marketplace.envato.com/api/v3/' + username + '/' + apikey + '/verify-purchase:' + item_purchase_code + '.json';
+        jQuery.timeago.settings.allowFuture = true;
+        var posturl = 'https://api.envato.com/v3/market/author/sale?code=' + item_purchase_code;
         $.ajax({
             type: 'GET',
             url: posturl,
@@ -315,17 +388,22 @@ $(document).ready(function() {
                 get_param: 'value'
             },
             dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + personal_token
+            },
             success: function(data) {
-                if (data['verify-purchase'].buyer == '' || data['verify-purchase'].buyer == null) {
+                if (data.buyer == '' || data.buyer == null) {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. That was a wrong verification code! </p>');
-                } else if (data.code == 'not_authenticated') {
+                } else if (data.error == '404') {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. Username and/or API Key is invalid. </p>');
                 } else {
-                    var buyer = data['verify-purchase'].buyer;
-                    var item_name = data['verify-purchase'].item_name;
-                    var licence = data['verify-purchase'].licence;
-                    var timestamp = data['verify-purchase'].created_at;
-                    $('.loading').fadeIn('slow').html('<p style="padding-bottom:0;"><a href="http://themeforest.net/user/' + buyer + '" target="_blank">' + buyer + '</a>  purchased a ' + licence + ' of ' + item_name + ' ' + $.timeago(timestamp) + '</p>');
+                    var buyer = data.buyer;
+                    var item_name = data.item.name;
+                    var licence = data.license;
+                    var timestamp = data.sold_at;
+                    var support_amt = data.support_amount;
+                    var support_expire = data.supported_until;
+                    $('.loading').fadeIn('slow').html('<p style="padding-bottom:0;"><a href="http://themeforest.net/user/' + buyer + '" target="_blank">' + buyer + '</a>  purchased a ' + licence + ' of ' + item_name + ' ' + $.timeago(timestamp) + '</p> <p> <strong>Support</strong>:  Amount: ' + support_amt + ', Supported until: ' + $.timeago(support_expire) + '</p>');
                 }
             },
             error: function(data) {
@@ -333,16 +411,23 @@ $(document).ready(function() {
             }
         });
     });
-    // Hide Author Earnings
-    // Author is browsing in public and do not want to reveal his balance
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                               Hide Author Earnings
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
     if (hide_earnings == 'true') {
         $('.header-logo-account__balance').hide();
     }
-    /* OLD FORUM LOOK */
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                    OLD FORUM LOOK 
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
     if (old_forum_look == 'true') {
         var pathname = window.location.href;
         if (pathname.indexOf('forums.envato') > -1) {
-            // insert styles from manifest :)
+
             // DomChange Function
             var observeDOM = (function() {
                 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
@@ -365,6 +450,13 @@ $(document).ready(function() {
                     }
                 }
             })();
+
+            // insert styles
+            var link = document.createElement('link');
+            link.href = chrome.extension.getURL('css/forums.css');
+            link.rel = 'stylesheet';
+            document.documentElement.insertBefore(link, null);
+
             // Cut URL Part
             function cutUrl(str) {
                 var matched = str.match(/([^/]*\/){4}/);
@@ -380,23 +472,126 @@ $(document).ready(function() {
                 last_reply_url;
             //$('.topic-list thead tr').prepend('<th>Avatar</th>')
             function showAvatars(thisObj) {
-                poster_avatar = $('.posters a:first-child img', thisObj).attr('src');
-                poster_avatar_big = poster_avatar.replace("25", "80");
-                last_reply_avatar = $('.posters .latest img', thisObj).attr('src');
-                last_reply_avatar_mid = last_reply_avatar.replace("25", "40");
-                started_by_name = $('.posters a:first-child', thisObj).data('user-card');
-                last_reply_name = $('.posters .latest', thisObj).data('user-card');
-                started_by_url = cutUrl($('.main-link .title', thisObj).attr('href'));
-                last_reply_url = $('.activity a', thisObj).attr('href');
-                $('.main-link', thisObj).prepend('<div class="thread_thumbs"><img src="' + poster_avatar_big + '" class="thread-started-by"><img src="' + last_reply_avatar_mid + '" class="thread-last-reply"></div>');
-                if ($(".topic-post-badges", thisObj).length) {
-                    $(".main-link .topic-post-badges", thisObj).after('<div class="thread-quick-links"></div>');
-                } else {
-                    $(".main-link .title", thisObj).after('<div class="thread-quick-links"></div>');
+                if ($('#main-outlet .topic-list .posters').length > 0) {
+                    poster_avatar = $('.posters a:first-child img', thisObj).attr('src');
+                    poster_avatar_big = poster_avatar.replace("25", "80");
+                    last_reply_avatar = $('.posters .latest img', thisObj).attr('src');
+                    last_reply_avatar_mid = last_reply_avatar.replace("25", "40");
+                    started_by_name = $('.posters a:first-child', thisObj).data('user-card');
+                    last_reply_name = $('.posters .latest', thisObj).data('user-card');
+                    started_by_url = cutUrl($('.main-link .title', thisObj).attr('href'));
+                    last_reply_url = $('.activity a', thisObj).attr('href');
+                    $('.main-link', thisObj).prepend('<div class="thread_thumbs"><img src="' + poster_avatar_big + '" class="thread-started-by"><img src="' + last_reply_avatar_mid + '" class="thread-last-reply"></div>');
+                    if ($(".topic-post-badges", thisObj).length) {
+                        $(".main-link .topic-post-badges", thisObj).after('<div class="thread-quick-links"></div>');
+                    } else {
+                        $(".main-link .title", thisObj).after('<div class="thread-quick-links"></div>');
+                    }
+                    $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>')
+                    $('.topic-list-item').addClass('old-forum-loaded');
                 }
-                $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>')
-                $('.topic-list-item').addClass('old-forum-loaded');
             }
+
+            setTimeout(function() {
+                $('.topic-list-item').each(function() {
+                    showAvatars($(this));
+                });
+            }, 1000)
+
+            setTimeout(function() {
+                observeDOM(document.getElementById('main-outlet'), function() {
+
+                    $('.topic-list-item').not('.old-forum-loaded').each(function() {
+                        showAvatars($(this));
+                    });
+
+                });
+
+            }, 1000)
+
+            /*
+             * Beautify Post pages to make it look like old forums
+             * Credit @Webcreations907
+             */
+
+            function BeautifyPostPage() {
+
+                $('.ember-view.topic-post:not(.rendered)').each(function() {
+
+                    if ($(this).has('.small-action:not(.time-gap)').length > 0) {
+                        return;
+                    }
+                    var userImg = $(this).find('article .row .topic-avatar .avatar');
+
+                    userImg.attr('src', userImg.attr('src').replace('/45/', '/80/'));
+                    userImg.attr('width', 80).attr('height', 80);
+
+                    $(this).addClass('rendered');
+
+                    // badges
+                    var badges = '',
+                        userName = userImg.parent().attr('data-user-card');
+
+                    $.getJSON("https://forums.envato.com/user-badges/" + userName + ".json", function(data) {
+                        if (data.badges.length > 0) {
+                            $.each(data.badges, function(i, userBadge) {
+                                badges += '<a href="https://forums.envato.com/badges/' + userBadge.id + '/x" target="_blank">'
+                                badges += '<img src="' + userBadge.image + '" title="' + userBadge.name + '" class="user-badges"/>';
+                                badges += '</a>'
+                            });
+                            userImg.parents('.topic-avatar').append('<div class="topic-badges">' + badges + '</div>');
+
+                            if (data.badges.length > 4) {
+                                var moreText = (data.badges.length - 4) + '+ more';
+                                userImg.parents('.topic-avatar').append('<a href="#" class="expand-badges">' + moreText + '</a>')
+                            }
+                        }
+                    });
+
+                    //Add Quick links, portfolio, topics,etc
+                    userImg.parents('.topic-avatar').wrapInner('<div class="contents"></div>');
+                    userImg.parents('.topic-avatar .contents').append('<div class="user-quick-links-avatar"><div class="inner-quick-links"></div></div>');
+                    userImg.parents('.topic-avatar').find('.inner-quick-links').append('<a class="user-portfolio-link" href="http://themeforest.net/user/' + userName + '" title="View ' + userName + '\'s Portfolio" target="_blank">' + userName + '</a>');
+                    userImg.parents('.topic-avatar').find('.inner-quick-links').append('<a href="https://forums.envato.com/users/' + userName + '/activity/posts">Recent Posts</a>');
+                    userImg.parents('.topic-avatar').find('.inner-quick-links').append('<a href="https://forums.envato.com/users/' + userName + '/activity/topics">Threads Started</a>');
+                });
+
+            }
+
+            setTimeout(function() {
+                BeautifyPostPage();
+            }, 1000)
+
+            setTimeout(function() {
+                var renderTimer;
+                $('#main-outlet').bind('DOMSubtreeModified', function(e) {
+                    if ($('.topic-list-item:not(.rendered)').length > 0 || $('.ember-view.topic-post:not(.rendered)').length > 0) {
+                        clearTimeout(renderTimer);
+                        renderTimer = setTimeout(function() {
+                            BeautifyPostPage();
+                        }, 2); //2? seems to work though :)
+                    }
+                });
+
+                $('#main-outlet').on('click', '.expand-badges', function(e) {
+                    e.preventDefault();
+                    $(this).parent().find('.topic-badges').css('height', 'auto');
+                    $(this).remove();
+                });
+
+            }, 1000)
+
+            /*End Post Page*/
+
+        } /*end pathname fn*/
+    } /*end if old forum*/
+
+    /* Hide Tags from Envato */
+
+    if (hide_forum_posts == 'true') {
+
+        var pathname = window.location.href;
+        if (pathname.indexOf('forums.envato') > -1) {
 
             function hideCustomTags(thisObj) {
                 var foundtags = [];
@@ -404,45 +599,52 @@ $(document).ready(function() {
                     foundtags.push($(this).text());
                 });
                 for (var i = 0; i < foundtags.length; i++) {
-                    if (forum_blacklist.indexOf(foundtags[i]) > -1) {
+                    if (forum_blacklist.indexOf(foundtags[i]) > -1 && forum_whitelist.indexOf(foundtags[i]) == -1) {
+                        console.log('black found');
                         thisObj.hide();
-                    }
-                }
-                for (var g = 0; g < foundtags.length; g++) {
-                    if (forum_whitelist.indexOf(foundtags[g]) > -1) {
+                    } else {
                         thisObj.show();
+                        break;
                     }
+
                 }
+
             }
-            $('.topic-list-item').each(function() {
-                showAvatars($(this));
-            });
-            observeDOM(document.getElementById('main-outlet'), function() {
-                setTimeout(function() {
-                    $('.topic-list-item').not('.old-forum-loaded').each(function() {
-                        showAvatars($(this));
-                    });
-                }, 1000)
-            });
-            /*if (hide_forum_posts == 'true') {
+
+            setTimeout(function() {
+
                 $('.topic-list-item').each(function() {
-                    hideCustomTags($(this));
+                    if ($(this).is(':last-child')) {
+                        // do nothing
+                    } else {
+                        hideCustomTags($(this));
+
+                    }
+
                 });
                 observeDOM(document.getElementById('list-area'), function() {
                     setTimeout(function() {
                         $('.topic-list-item').each(function() {
-                            hideCustomTags($(this));
+                            if ($(this).is(':last-child')) {
+                                // do nothing
+                            } else {
+                                hideCustomTags($(this));
+                            }
                         });
                     }, 1000)
                 });
-            }*/
-        } /*end pathname fn*/
-    } /*end if ole forum*/
-    /*
-     *
-     * Auto Close Item Preview Frame
-     *
-     */
+
+            }, 1000)
+
+        }
+    }
+
+    /*End Hide Tags*/
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                         Auto Close Item Preview Frame
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
     if (close_iframe_preview == 'true') {
         //do this
         checkPreviewURL();
@@ -460,6 +662,7 @@ $(document).ready(function() {
         }
     }
 }); /*End Document Ready*/
+
 var current_url = window.location.pathname;
 $(document).click(function() {
     if (window.location.pathname.indexOf('/earnings/') > -1) {

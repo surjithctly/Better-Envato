@@ -2,14 +2,12 @@
    "content_scripts": [ {
       "js": [ "js/jquery.min.js", "js/plugins.js", "js/Chart.min.js", "better-envato.js" ],
       "css": ["css/envato-styles.css"],
-      "matches": [ "*://*.themeforest.net/*", "*://*.codecanyon.net/*", "*://*.videohive.net/*", "*://*.audiojungle.net/*", "*://*.graphicriver.net/*", "*://*.photodune.net/*", "*://*.3docean.net/*", "*://*.activeden.net/*", "*://forums.envato.com/*" ]
+      "matches": [ "*://*.themeforest.net/*", "*://*.codecanyon.net/*", "*://*.videohive.net/*", "*://*.audiojungle.net/*", "*://*.graphicriver.net/*", "*://*.photodune.net/*", "*://*.3docean.net/*", "*://*.activeden.net/*", "*://forums.envato.com/*" ],
 
-   },
-{
-      "css": ["css/forums.css"],
-"matches": ["*://forums.envato.com/*" ],
 "run_at": "document_start"
-}
+
+
+   }
 
  ],
 "web_accessible_resources": ["css/forums.css"],
@@ -19,7 +17,7 @@
 "background": {
         "page": "background.html"
     },
-   "description": "Make Envato better by adding some cool features",
+   "description": "Make Envato Market better by adding some cool features",
    "icons": {
       "128": "img/128.png",
       "16": "img/16.png",
@@ -29,7 +27,7 @@
    "name": "Better Envato",
    "short_name": "Better Envato",
    "options_page": "options.html",
-   "permissions": [ "tabs", "webRequest", "notifications", "background" ],
+   "permissions": [ "webRequest", "notifications", "background" ],
    "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "1.2.6"
+   "version": "2.0.0"
 }

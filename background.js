@@ -1,27 +1,27 @@
 // Show the config file on installation
 chrome.runtime.onInstalled.addListener(function(object) {
 
-    if (localStorage.firsttime != 'false' || localStorage.firsttime == 'undefined' || !localStorage.firsttime ) {
-    var optionsurl = chrome.extension.getURL("options.html");
-    chrome.tabs.create({
-        url: optionsurl
-    }, function(tab) {});
-	
-    localStorage.firsttime = false;
-}
+    if (localStorage.firsttime != 'false' || localStorage.firsttime == 'undefined' || !localStorage.firsttime) {
+        var optionsurl = chrome.extension.getURL("options.html");
+        chrome.tabs.create({
+            url: optionsurl
+        }, function(tab) {});
 
-var currentversion = chrome.app.getDetails().version;
+        localStorage.firsttime = false;
+    }
 
- if (!localStorage.version || localStorage.version != currentversion) {
-       chrome.browserAction.setBadgeText({text:"NEW"});      
-	   localStorage.version = currentversion
-}
+    var currentversion = chrome.app.getDetails().version;
 
-//chrome.browserAction.setBadgeBackgroundColor({color:[255, 64, 64, 230]});
-	
-	
+    if (!localStorage.version || localStorage.version != currentversion) {
+        chrome.browserAction.setBadgeText({
+            text: "NEW"
+        });
+        localStorage.version = currentversion
+    }
+
+    //chrome.browserAction.setBadgeBackgroundColor({color:[255, 64, 64, 230]});
+
 });
-
 
 // Get Local Storage value in Content Script
 
@@ -60,16 +60,15 @@ chrome.browserAction.onClicked.addListener(function(tab) { //Fired when User Cli
     chrome.tabs.create({
         url: "options.html"
     });
-	chrome.browserAction.setBadgeText({text:""}); 
+    chrome.browserAction.setBadgeText({
+        text: ""
+    });
 });
-
-
 
 function updatedSettings() {
     //chrome.runtime.reload();
     location.reload(true);
 }
-
 
 // Test for notification support.
 if (window.Notification) {
@@ -90,48 +89,93 @@ if (window.Notification) {
         }, 60000);
     }
 
-
 }
-
-
 
 // Sales Notifications
 function sales_notification() {
 
     var username = localStorage.username;
-    var apikey = localStorage.apikey;
+    var personal_token = localStorage.personal_token;
     var earnings = localStorage.earnings;
+    var sales_stamp = localStorage.sales_stamp;
 
-    if (typeof username == 'undefined' || typeof apikey == 'undefined') {
+    if (typeof username == 'undefined' || typeof personal_token == 'undefined') {
         return false;
     }
 
-    // Use Envato API to check sales
-    $.get('http://marketplace.envato.com/api/edge/' + username + '/' + apikey + '/account.json', function(data) {
+    var posturl = 'https://api.envato.com/v1/market/private/user/account.json';
 
-        //get current sales
-        var new_earnings = data.account.available_earnings;
-        var first_name = data.account.firstname;
+    jQuery.ajax({
+        url: posturl,
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + personal_token
+        },
+        success: function(data) {
+            //get current sales
+            var new_earnings = data.account.available_earnings;
+            var first_name = data.account.firstname;
 
-        //earnings < new_earnings
-        // testing: new_earnings > 1
+            // If earning is higher get recent sales
 
-        if (earnings < new_earnings) {
+            if (earnings < new_earnings) {
 
-            $.get('http://marketplace.envato.com/api/v3/' + username + '/' + apikey + '/recent-sales.json', function(salesdata) {
+                var posturl_2 = 'https://api.envato.com/v3/market/author/sales';
+                jQuery.ajax({
+                    url: posturl_2,
+                    dataType: 'json',
+                    headers: {
+                        'Authorization': 'Bearer ' + personal_token
+                    },
+                    success: function(salesdata) {
 
-                //get current sales
-                var sold_item = salesdata["recent-sales"][0].item;
-                var item_price = salesdata["recent-sales"][0].amount;
-                show_notification(new_earnings, item_price, first_name, sold_item, 'item');
-                play_sound();
+                        // get number of sales made while offline
+                        var sales_offline;
+                        for (var i = 0; i < salesdata.length; i++) {
+                            if (salesdata[i].sold_at == sales_stamp) {
+                                sales_offline = i;
+                            }
 
-            });
+                            if (typeof sales_offline === 'undefined') {
+                                sales_offline = 'Shit Load of';
+                            }
+                        }
+
+                        //get current sales
+                        var sold_item = salesdata[0].item.name;
+                        var item_price = salesdata[0].amount;
+                        var sold_at = salesdata[0].sold_at;
+
+                        if (sales_stamp !== sold_at && sales_offline == 1) {
+                            show_notification(new_earnings, item_price, first_name, sold_item, 'item');
+                            play_sound();
+
+                            localStorage.sales_stamp = sold_at;
+
+                        } else if (sales_stamp !== sold_at) {
+                            show_offline_notification(sales_offline);
+                            play_sound();
+                        }
+
+                    },
+                    error: function(salesdata) {
+                        response = JSON.parse(salesdata.responseText);
+                        console.log("Error: ", salesdata);
+                    }
+                });
+                // end earning scheck ajax request
+
+            }
+
+            // end if earnings
+
+            localStorage.earnings = new_earnings;
+
+        },
+        error: function(data) {
+            response = JSON.parse(data.responseText);
+            console.log("Error: ", data);
         }
-
-
-        localStorage.earnings = new_earnings;
-
     });
 
 }
@@ -145,9 +189,13 @@ function play_sound() {
     return false;
 }
 
+/*++++++++++++++++++++++++++++++++++++++++++++++
+         SALES NOTIFICACTION
+  ++++++++++++++++++++++++++++++++++++++++++++++*/
+
 function show_notification(new_earnings, item_price, first_name, sold_item, item) {
 
-    var praiseArray = ['Woohoo', 'Bravo', 'Wow', 'Ahoy', 'Yay', 'Yikes', 'Hooray', 'Whoa', 'Woot', 'Oh joy', first_name];
+    var praiseArray = ['Woohoo', 'Bravo', 'Wow', 'Ahoy', 'Yay', 'Yikes', 'Hooray', 'Whoa', 'Woot', 'Oh joy', 'Yo!', 'Viola!', 'Holly Molly!', first_name];
     var randomPraise = praiseArray[Math.floor(Math.random() * praiseArray.length)];
 
     var notification = new Notification(randomPraise + '! New Sale.', {
@@ -159,13 +207,41 @@ function show_notification(new_earnings, item_price, first_name, sold_item, item
         window.open("http://themeforest.net/statement");
     }
     if (localStorage.auto_hide_sales_notification != 'false') {
-		setTimeout(function() {
-			notification.close()
-		}, 15000);
-	}
+        setTimeout(function() {
+            notification.close()
+        }, 15000);
+    }
 
 }
 
+/*++++++++++++++++++++++++++++++++++++++++++++++
+            OFFLINE SALES NOTIFICACTION
+  ++++++++++++++++++++++++++++++++++++++++++++++*/
+
+function show_offline_notification(sales_offline) {
+
+    var praiseArray = ['Woohoo', 'Bravo', 'Wow', 'Ahoy', 'Yay', 'Yikes', 'Hooray', 'Whoa', 'Woot', 'Oh joy', 'Yo!', 'Viola!', 'Holly Molly!'];
+    var randomPraise = praiseArray[Math.floor(Math.random() * praiseArray.length)];
+
+    var notification = new Notification(sales_offline + ' New Sales!', {
+        icon: 'img/48.png',
+        body: randomPraise + ' You just made ' + sales_offline + ' sales while you were away. Keep up the good work.'
+    });
+
+    notification.onclick = function() {
+        window.open("http://themeforest.net/statement");
+    }
+    if (localStorage.auto_hide_sales_notification != 'false') {
+        setTimeout(function() {
+            notification.close()
+        }, 15000);
+    }
+
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++
+            COMMENT NOTIFICACTION
+  ++++++++++++++++++++++++++++++++++++++++++++++*/
 
 function comment_notification() {
 
@@ -202,8 +278,6 @@ function comment_notification() {
         return false;
     }
 
-
-
     function show_comments(new_comment, new_comment_item, new_comment_url, comment_id_hash) {
 
         var c_notification = new Notification('New Comment for ' + new_comment_item, {
@@ -214,12 +288,12 @@ function comment_notification() {
         c_notification.onclick = function() {
             window.open(new_comment_url + '/' + comment_id_hash);
         }
-		
+
         if (localStorage.auto_hide_comment_notification != 'false') {
-			setTimeout(function() {
-				c_notification.close()
-			}, 15000);
-		}
+            setTimeout(function() {
+                c_notification.close()
+            }, 15000);
+        }
 
     }
 

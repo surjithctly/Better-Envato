@@ -36,18 +36,16 @@ function save_options() {
         localStorage[$(this).attr("name")] = $(this).prop("checked");
     });
 
-	$(this).text('Saving...').removeClass("btn-success");
-	
-	setTimeout(function() {
-       $('#save-options-button').text('Options Saved');
-    }, 700);
-	
-	
+    $(this).text('Saving...').removeClass("btn-success");
 
-      // Ask for a good review
-  if( ! localStorage.reviewed ) {
-    $('#rate-it').html('<div class="highlight">Enjoying <strong>Better Envato</strong>? Head over to the <a class="fivestars" href="https://chrome.google.com/webstore/detail/better-envato/mlbkjbladkceacbifjpgimbkibhgbadf/reviews" target="_bank">Chrome Web Store</a> and give it 5 stars. We will love you <em>forever</em>.</div>');
-  }
+    setTimeout(function() {
+        $('#save-options-button').text('Options Saved');
+    }, 700);
+
+    // Ask for a good review
+    if (!localStorage.reviewed) {
+        $('#rate-it').html('<div class="highlight">Enjoying <strong>Better Envato</strong>? Head over to the <a class="fivestars" href="https://chrome.google.com/webstore/detail/better-envato/mlbkjbladkceacbifjpgimbkibhgbadf/reviews" target="_bank">Chrome Web Store</a> and give it 5 stars. We will love you <em>forever</em>.</div>');
+    }
 
     get_sales_data();
     get_comment_data();
@@ -55,49 +53,54 @@ function save_options() {
 
 }
 
-
 /**
  * Reset the save button
  */
-$('input, select').on('keyup click', function () {
-  $('#save-options-button').text('Save Options').addClass("btn-success");
+$('input, select').on('keyup click', function() {
+    $('#save-options-button').text('Save Options').addClass("btn-success");
 });
-
 
 /**
- * Store that the user has already been to the Web Store (:. we <3 them)
+ * Store that the user has already been to the Web Store <3 )
  */
- 
-$('body').on('click', '.fivestars', function () {
-  localStorage.reviewed = true;
-  $('#rate-it').html('<div class="highlight love">You\'re <strong>awesome</strong> &hearts;');
+
+$('body').on('click', '.fivestars', function() {
+    localStorage.reviewed = true;
+    $('#rate-it').html('<div class="highlight love">You\'re <strong>awesome</strong> &hearts;');
 });
-
-
-
 
 // Sales Notifications
 function get_sales_data() {
 
     var username = localStorage.username;
-    var apikey = localStorage.apikey;
+    var personal_token = localStorage.personal_token;
     var earnings = localStorage.earnings;
 
-    if (typeof username == 'undefined' || typeof apikey == 'undefined') {
+    if (typeof username == 'undefined' || typeof personal_token == 'undefined') {
         return false;
     }
-
     // Use Envato API to check sales
-    $.get('http://marketplace.envato.com/api/edge/' + username + '/' + apikey + '/account.json', function(data) {
+    var posturl = 'https://api.envato.com/v1/market/private/user/account.json';
 
-        //get current sales
-        var new_earnings = data.account.available_earnings;
-        localStorage.earnings = new_earnings;
-
+    jQuery.ajax({
+        url: posturl,
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + personal_token
+        },
+        success: function(data) {
+            //get current sales
+            var new_earnings = data.account.available_earnings;
+            localStorage.earnings = new_earnings;
+            localStorage.sales_stamp = '0';
+        },
+        error: function(data) {
+            response = JSON.parse(data.responseText);
+            console.log("Error: ", data);
+        }
     });
 
 }
-
 
 function get_comment_data() {
 
