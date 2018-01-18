@@ -4,6 +4,7 @@ Keywords: Make Envato Better
 Created by: Surjith S M © 2015-2020
 */
 var username, personal_token, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, old_forum_look, hide_forum_posts, forum_blacklist, forum_whitelist, close_iframe_preview;
+var $ = jQuery; // make sure the $ variable is properly initialized
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
         keys: ["username", "personal_token", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings', 'old_forum_look', 'hide_forum_posts', 'forum_blacklist', 'forum_whitelist', 'close_iframe_preview']
@@ -33,8 +34,8 @@ chrome.runtime.sendMessage({
 
 $(document).ready(function() {
 
-    if (personal_token == 'undefined' || personal_token == "" || personal_token == "null") {
-        console.log('%c Better Envato : Please add Envato API Token to make this plugin work.', 'color:red; font-weight:bold; font-size:18px;')
+    if (personal_token == 'undefined' || personal_token === "" || personal_token == "null") {
+        console.log('%c Better Envato : Please add Envato API Token to make this plugin work.', 'color:red; font-weight:bold; font-size:18px;');
     }
 
     if (localise_earnings != 'false') {
@@ -45,7 +46,7 @@ $(document).ready(function() {
         }
     }
 
-    if (personal_token == 'undefined' || personal_token == null || personal_token == '') {
+    if (personal_token == 'undefined' || personal_token === null || personal_token === '') {
 
         var pathname = window.location.pathname;
         if (pathname.indexOf('author_dashboard') > -1) {
@@ -102,7 +103,7 @@ function inr_currency(nStr) {
         }
         z++;
         num--;
-        if (num == 0) {
+        if (num === 0) {
             break;
         }
     }
@@ -245,16 +246,17 @@ $(document).ready(function() {
     /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                         CONVERT CURRENCIES IN EARNINGS TAB    
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
+		var pathname = null; // Initialisation goes allways first and only once!!!
+  
     if (localise_earnings_page != 'false') {
-        var pathname = window.location.pathname;
+        pathname = window.location.pathname;
         if (pathname.indexOf('/earnings/') > -1) {
             // Generate new graph
             var graph_data = $.parseJSON($('body script[id="graphdata"]').text());
             var current_object, unconverted, converted, data_indexes, counter;
             counter = 0;
-            data_indexes = graph_data.datasets[0]['data'].length;
-            $.each(graph_data.datasets[0]['data'], function(i, val) {
+            data_indexes = graph_data.datasets[0].data.length;
+            $.each(graph_data.datasets[0].data, function(i, val) {
                 if (val > 0) {
                     // Localize
                     if (openexchange == 'undefined') {
@@ -264,7 +266,7 @@ $(document).ready(function() {
                         unconverted = parseFloat(val);
                         converted = convertPrice(unconverted, function(data) {
                             if (parseFloat(data.replace(/[^0-9\.]/g, '')) > 0) {
-                                graph_data.datasets[0]['data'][i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
+                                graph_data.datasets[0].data[i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
                                 counter++;
                             }
                         });
@@ -332,7 +334,7 @@ $(document).ready(function() {
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (create_hrefs != 'false') {
-        var pathname = window.location.pathname;
+        pathname = window.location.pathname;
         if (pathname.indexOf('/referrals') > -1) {
             var source = '';
             var path = '';
@@ -358,7 +360,7 @@ $(document).ready(function() {
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (verify_purchase == 'true') {
-        var pathname = window.location.pathname;
+        pathname = window.location.pathname;
         if (pathname.indexOf('author_dashboard') > -1) {
             var verify_html_block = '<div class="box--topbar"> <h2>Verify Purchase Code <small class="pull-right">Better Envato</small></h2></div><div class="box--hard-top"> <form id="verifypurchase" method="GET"> <fieldset class="vertical-form"> <div class="input-group">  <div class="inputs"> <input type="text" name="purchase_code" id="purchase_code" class="inline" style="width: 60.81967%;" placeholder="Enter Purchase Code here"> <button type="submit" class="btn-icon submit auto-width">Verify Purchase Code</button> </div></div></fieldset></form> <div class="loading"></div></div>';
             //$("#content .content-s").append(verify_html_block);
@@ -370,7 +372,7 @@ $(document).ready(function() {
         e.preventDefault();
         var purchase_code = $("#purchase_code");
         var flag = false;
-        if (purchase_code.val() == "") {
+        if (purchase_code.val() === "") {
             purchase_code.focus();
             flag = false;
             return false;
@@ -392,7 +394,7 @@ $(document).ready(function() {
                 'Authorization': 'Bearer ' + personal_token
             },
             success: function(data) {
-                if (data.buyer == '' || data.buyer == null) {
+                if (data.buyer === '' || data.buyer === null) {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. That was a wrong verification code! </p>');
                 } else if (data.error == '404') {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. Username and/or API Key is invalid. </p>');
@@ -425,7 +427,7 @@ $(document).ready(function() {
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (old_forum_look == 'true') {
-        var pathname = window.location.href;
+        pathname = window.location.href;
         if (pathname.indexOf('forums.envato') > -1) {
 
             // DomChange Function
@@ -448,7 +450,7 @@ $(document).ready(function() {
                         obj.addEventListener('DOMNodeInserted', callback, false);
                         obj.addEventListener('DOMNodeRemoved', callback, false);
                     }
-                }
+                };
             })();
 
             // insert styles
@@ -465,7 +467,7 @@ $(document).ready(function() {
             var poster_avatar,
                 poster_avatar_big,
                 last_reply_avatar,
-                last_reply_avatar_med,
+                // last_reply_avatar_med, unused variable
                 started_by_name,
                 last_reply_name,
                 started_by_url,
@@ -487,7 +489,7 @@ $(document).ready(function() {
                     } else {
                         $(".main-link .title", thisObj).after('<div class="thread-quick-links"></div>');
                     }
-                    $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>')
+                    $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>');
                     $('.topic-list-item').addClass('old-forum-loaded');
                 }
             }
@@ -496,7 +498,7 @@ $(document).ready(function() {
                 $('.topic-list-item').each(function() {
                     showAvatars($(this));
                 });
-            }, 1000)
+            }, 1000);
 
             setTimeout(function() {
                 observeDOM(document.getElementById('main-outlet'), function() {
@@ -507,7 +509,7 @@ $(document).ready(function() {
 
                 });
 
-            }, 1000)
+            }, 1000);
 
             /*
              * Beautify Post pages to make it look like old forums
@@ -535,15 +537,15 @@ $(document).ready(function() {
                     $.getJSON("https://forums.envato.com/user-badges/" + userName + ".json", function(data) {
                         if (data.badges.length > 0) {
                             $.each(data.badges, function(i, userBadge) {
-                                badges += '<a href="https://forums.envato.com/badges/' + userBadge.id + '/x" target="_blank">'
+                                badges += '<a href="https://forums.envato.com/badges/' + userBadge.id + '/x" target="_blank">';
                                 badges += '<img src="' + userBadge.image + '" title="' + userBadge.name + '" class="user-badges"/>';
-                                badges += '</a>'
+                                badges += '</a>';
                             });
                             userImg.parents('.topic-avatar').append('<div class="topic-badges">' + badges + '</div>');
 
                             if (data.badges.length > 4) {
                                 var moreText = (data.badges.length - 4) + '+ more';
-                                userImg.parents('.topic-avatar').append('<a href="#" class="expand-badges">' + moreText + '</a>')
+                                userImg.parents('.topic-avatar').append('<a href="#" class="expand-badges">' + moreText + '</a>');
                             }
                         }
                     });
@@ -560,7 +562,7 @@ $(document).ready(function() {
 
             setTimeout(function() {
                 BeautifyPostPage();
-            }, 1000)
+            }, 1000);
 
             setTimeout(function() {
                 var renderTimer;
@@ -579,7 +581,7 @@ $(document).ready(function() {
                     $(this).remove();
                 });
 
-            }, 1000)
+            }, 1000);
 
             /*End Post Page*/
 
@@ -590,7 +592,7 @@ $(document).ready(function() {
 
     if (hide_forum_posts == 'true') {
 
-        var pathname = window.location.href;
+        pathname = window.location.href;
         if (pathname.indexOf('forums.envato') > -1) {
 
             function hideCustomTags(thisObj) {
@@ -631,10 +633,10 @@ $(document).ready(function() {
                                 hideCustomTags($(this));
                             }
                         });
-                    }, 1000)
+                    }, 1000);
                 });
 
-            }, 1000)
+            }, 1000);
 
         }
     }
