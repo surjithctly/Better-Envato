@@ -16,7 +16,7 @@ chrome.runtime.onInstalled.addListener(function(object) {
         chrome.browserAction.setBadgeText({
             text: "NEW"
         });
-        localStorage.version = currentversion
+        localStorage.version = currentversion;
     }
 
     //chrome.browserAction.setBadgeBackgroundColor({color:[255, 64, 64, 230]});
@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
                 var data = {};
                 message.keys.forEach(function(key) {
                     data[key] = localStorage[key];
-                })
+                });
                 sendResponse({
                     data: data
                 });
@@ -65,10 +65,12 @@ chrome.browserAction.onClicked.addListener(function(tab) { //Fired when User Cli
     });
 });
 
+// Unused function
+/*
 function updatedSettings() {
     //chrome.runtime.reload();
     location.reload(true);
-}
+} */
 
 // Test for notification support.
 if (window.Notification) {
@@ -159,7 +161,7 @@ function sales_notification() {
 
                     },
                     error: function(salesdata) {
-                        response = JSON.parse(salesdata.responseText);
+                        var response = JSON.parse(salesdata.responseText); // unused
                         console.log("Error: ", salesdata);
                     }
                 });
@@ -173,7 +175,7 @@ function sales_notification() {
 
         },
         error: function(data) {
-            response = JSON.parse(data.responseText);
+            var response = JSON.parse(data.responseText); // unused
             console.log("Error: ", data);
         }
     });
@@ -205,10 +207,10 @@ function show_notification(new_earnings, item_price, first_name, sold_item, item
 
     notification.onclick = function() {
         window.open("http://themeforest.net/statement");
-    }
+    };
     if (localStorage.auto_hide_sales_notification != 'false') {
         setTimeout(function() {
-            notification.close()
+            notification.close();
         }, 15000);
     }
 
@@ -230,10 +232,10 @@ function show_offline_notification(sales_offline) {
 
     notification.onclick = function() {
         window.open("http://themeforest.net/statement");
-    }
+    };
     if (localStorage.auto_hide_sales_notification != 'false') {
         setTimeout(function() {
-            notification.close()
+            notification.close();
         }, 15000);
     }
 
@@ -287,11 +289,11 @@ function comment_notification() {
 
         c_notification.onclick = function() {
             window.open(new_comment_url + '/' + comment_id_hash);
-        }
+        };
 
         if (localStorage.auto_hide_comment_notification != 'false') {
             setTimeout(function() {
-                c_notification.close()
+                c_notification.close();
             }, 15000);
         }
 
