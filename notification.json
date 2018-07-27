@@ -1,5 +1,5 @@
 {
 "success": true,
-"auth_notification_id" : 1,
-"auth_notification_content" : "Join our Un-offical Slack Community for Envato Authors <a href='http://envato-authors.com/' target='_blank'>Join Now</a>"
+"auth_notification_id" : 2,
+"auth_notification_content" : "test: Join our Un-offical Slack Community for Envato Authors <a href='http://envato-authors.com/' target='_blank'>Join Now</a>"
 }
