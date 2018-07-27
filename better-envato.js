@@ -3,11 +3,10 @@ Name: Better Envato
 Keywords: Make Envato Better
 Created by: Surjith S M © 2015-2020
 */
-var username, personal_token, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, old_forum_look, hide_forum_posts, forum_blacklist, forum_whitelist, close_iframe_preview;
-var $ = jQuery; // make sure the $ variable is properly initialized
+var username, personal_token, openexchange, currency, localise_earnings, localise_earnings_table, localise_earnings_page, hide_statement, verify_purchase, create_hrefs, old_forum_look, close_iframe_preview, remember_withdraw, show_best_selling_items;
 chrome.runtime.sendMessage({
         method: "getLocalStorage",
-        keys: ["username", "personal_token", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings', 'old_forum_look', 'hide_forum_posts', 'forum_blacklist', 'forum_whitelist', 'close_iframe_preview']
+        keys: ["username", "personal_token", "openexchange", "currency", "localise_earnings", 'localise_earnings_table', 'localise_earnings_page', 'hide_statement', 'verify_purchase', 'create_hrefs', 'hide_earnings', 'old_forum_look', 'close_iframe_preview', 'remember_withdraw', 'show_best_selling_items']
     },
     function(response) {
         username = response.data.username;
@@ -23,19 +22,16 @@ chrome.runtime.sendMessage({
         hide_earnings = response.data.hide_earnings;
         old_forum_look = response.data.old_forum_look;
         close_iframe_preview = response.data.close_iframe_preview;
-        hide_forum_posts = response.data.hide_forum_posts;
-        forum_blacklist = response.data.forum_blacklist;
-        forum_whitelist = response.data.forum_whitelist;
+        remember_withdraw = response.data.remember_withdraw;
+        show_best_selling_items = response.data.show_best_selling_items;
     }
 );
-/*hide_forum_posts = response.data.hide_forum_posts;
-        forum_blacklist = response.data.forum_blacklist;
-        forum_whitelist = response.data.forum_whitelist;*/
+
 
 $(document).ready(function() {
 
-    if (personal_token == 'undefined' || personal_token === "" || personal_token == "null") {
-        console.log('%c Better Envato : Please add Envato API Token to make this plugin work.', 'color:red; font-weight:bold; font-size:18px;');
+    if (personal_token == 'undefined' || personal_token == "" || personal_token == "null") {
+        console.log('%c Better Envato : Please add Envato API Token to make this plugin work.', 'color:red; font-weight:bold; font-size:18px;')
     }
 
     if (localise_earnings != 'false') {
@@ -46,18 +42,6 @@ $(document).ready(function() {
         }
     }
 
-    if (personal_token == 'undefined' || personal_token === null || personal_token === '') {
-
-        var pathname = window.location.pathname;
-        if (pathname.indexOf('author_dashboard') > -1) {
-            var options_url = chrome.extension.getURL('options.html');
-            var verify_html_block = '<div class="e-alert-box"> <div class="e-alert-box__icon"> <i class="e-icon -icon-flag"></i> </div> <div class="e-alert-box__message"> <p class="t-body -size-m h-remove-margin"><strong>Better Envato Extension</strong> <br><br> Hello, Please create a new please create new Envato API <a href="https://build.envato.com/create-token/" target="_blank">Personal Token</a> (please tick all options) add add the same in the Better Envato <a href="' + options_url + '" target="_blank">Options page</a>. Otherwise the plugin will not work <br> <br> ~Surjith </p>  </div> </div>';
-            //$("#content .content-s").append(verify_html_block);
-            $(verify_html_block).insertBefore("#content .content-s .content-s");
-            //alert('done');
-        }
-
-    }
 
 });
 
@@ -103,7 +87,7 @@ function inr_currency(nStr) {
         }
         z++;
         num--;
-        if (num === 0) {
+        if (num == 0) {
             break;
         }
     }
@@ -142,9 +126,9 @@ function dollartToInr() {
                     currency_sign = currency;
                 }
                 if (currency == 'INR') {
-                    $('.header-logo-account__balance').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                    $('.global-header-menu ul li:last-child > a.global-header-menu__link span:last-child').text(currency_sign + ' ' + inr_currency(finalearnings.toFixed(2))).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
                 } else {
-                    $('.header-logo-account__balance').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
+                    $('.global-header-menu ul li:last-child > a.global-header-menu__link span:last-child').text(currency_sign + ' ' + format_currency(finalearnings)).parent().attr('title', 'Actual Earnings: $' + earningsdollar);
                 }
             },
             error: function(data) {
@@ -246,17 +230,16 @@ $(document).ready(function() {
     /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                         CONVERT CURRENCIES IN EARNINGS TAB    
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-		var pathname = null; // Initialisation goes allways first and only once!!!
-  
+
     if (localise_earnings_page != 'false') {
-        pathname = window.location.pathname;
+        var pathname = window.location.pathname;
         if (pathname.indexOf('/earnings/') > -1) {
             // Generate new graph
             var graph_data = $.parseJSON($('body script[id="graphdata"]').text());
             var current_object, unconverted, converted, data_indexes, counter;
             counter = 0;
-            data_indexes = graph_data.datasets[0].data.length;
-            $.each(graph_data.datasets[0].data, function(i, val) {
+            data_indexes = graph_data.datasets[0]['data'].length;
+            $.each(graph_data.datasets[0]['data'], function(i, val) {
                 if (val > 0) {
                     // Localize
                     if (openexchange == 'undefined') {
@@ -266,7 +249,7 @@ $(document).ready(function() {
                         unconverted = parseFloat(val);
                         converted = convertPrice(unconverted, function(data) {
                             if (parseFloat(data.replace(/[^0-9\.]/g, '')) > 0) {
-                                graph_data.datasets[0].data[i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
+                                graph_data.datasets[0]['data'][i] = parseFloat(data.replace(/[^0-9\.]/g, ''));
                                 counter++;
                             }
                         });
@@ -289,7 +272,7 @@ $(document).ready(function() {
                         bezierCurve: !1
                     };
                     $(".js-graph__canvas").remove();
-                    $('.graph__container').append('<canvas class="graph__canvas js-graph__canvas" width="964" height="300"></canvas>');
+                    $('.graph__container .box').append('<canvas class="graph__canvas js-graph__canvas" width="620" height="350"></canvas>');
                     var canvas = $(".graph__canvas").get(0).getContext('2d');
                     new Chart(canvas).Line(graph_data, chart_data);
                     clearInterval(renderGraph);
@@ -334,7 +317,7 @@ $(document).ready(function() {
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (create_hrefs != 'false') {
-        pathname = window.location.pathname;
+        var pathname = window.location.pathname;
         if (pathname.indexOf('/referrals') > -1) {
             var source = '';
             var path = '';
@@ -360,7 +343,7 @@ $(document).ready(function() {
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (verify_purchase == 'true') {
-        pathname = window.location.pathname;
+        var pathname = window.location.pathname;
         if (pathname.indexOf('author_dashboard') > -1) {
             var verify_html_block = '<div class="box--topbar"> <h2>Verify Purchase Code <small class="pull-right">Better Envato</small></h2></div><div class="box--hard-top"> <form id="verifypurchase" method="GET"> <fieldset class="vertical-form"> <div class="input-group">  <div class="inputs"> <input type="text" name="purchase_code" id="purchase_code" class="inline" style="width: 60.81967%;" placeholder="Enter Purchase Code here"> <button type="submit" class="btn-icon submit auto-width">Verify Purchase Code</button> </div></div></fieldset></form> <div class="loading"></div></div>';
             //$("#content .content-s").append(verify_html_block);
@@ -372,7 +355,7 @@ $(document).ready(function() {
         e.preventDefault();
         var purchase_code = $("#purchase_code");
         var flag = false;
-        if (purchase_code.val() === "") {
+        if (purchase_code.val() == "") {
             purchase_code.focus();
             flag = false;
             return false;
@@ -394,7 +377,7 @@ $(document).ready(function() {
                 'Authorization': 'Bearer ' + personal_token
             },
             success: function(data) {
-                if (data.buyer === '' || data.buyer === null) {
+                if (data.buyer == '' || data.buyer == null) {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. That was a wrong verification code! </p>');
                 } else if (data.error == '404') {
                     $('.loading').fadeIn('slow').html('<p style="padding-bottom:0; color:#C25B5B;"> Sorry. Username and/or API Key is invalid. </p>');
@@ -415,11 +398,142 @@ $(document).ready(function() {
     });
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                          REMEMBER TO WITHDRAW EARNINGS
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+    /*
+     * Inspired from Dashboard Plus by @dtbaker. 
+     * Thank you sir. 
+     */
+
+
+
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+
+
+    if (remember_withdraw == 'true') {
+
+        var d = new Date(),
+            currentYear = d.getFullYear(),
+            currentMonth = d.getMonth(),
+            lastday = new Date(currentYear, currentMonth + 1, 0),
+            dateleft = parseInt((lastday - d) / (24 * 3600 * 1000));
+
+
+        checkDateRemind();
+
+        function checkDateRemind() {
+            if (dateleft <= 2) {
+
+
+                var is_withdraw_remind_shown = getCookie('withdraw_reminder');
+
+                if (!is_withdraw_remind_shown) {
+
+                    var pathname = window.location.pathname;
+                    if (pathname.indexOf('author_dashboard') > -1) {
+                        var verify_html_block = '<div id="be-reminder" class="e-alert-box -type-alert"> <div class="e-alert-box__icon"> <i class="e-icon -icon-flag"></i> </div> <div class="e-alert-box__message">';
+                        verify_html_block += ' <p class="t-body -size-m h-remove-margin"><strong>Better Envato Reminder</strong> <br><br> ';
+                        verify_html_block += 'You have only two days left to withdraw earnings for this month. So please don\'t forgot and make it early as possible. Click the button below to hide this message. </p> ';
+                        verify_html_block += ' <p><a href="javascript:" class="e-btn reminder_close">Okay. Got it.</a></p> </div> </div>';
+                        //verify_html_block += ' <style> .reminder_close {float:right;  padding: 0 5px;  line-height: 1;} </style>';
+
+                        //$("#content .content-s").append(verify_html_block);
+                        $(verify_html_block).insertBefore("#content .content-s .content-s");
+                        //alert('done');
+                    }
+                }
+
+                $('.reminder_close').on('click', function() {
+                    $('#be-reminder').fadeOut();
+                    setCookie('withdraw_reminder', 'shown', 3);
+                });
+
+            }
+
+        }
+    }
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                               Author Dashboard NOtification
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+    var last_notification = localStorage.last_notification;
+
+    if (typeof localStorage.last_notification == 'undefined') {
+        last_notification = 0;
+    }
+
+    function auth_notifications() {
+        var pathname = window.location.pathname;
+        if (pathname.indexOf('author_dashboard') > -1) {
+
+            var posturl = 'https://raw.githubusercontent.com/surjithctly/Better-Envato/master/notification.json?';
+            $.ajax({
+                type: 'GET',
+                url: posturl,
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success == true) {
+                        var n_id = data.auth_notification_id;
+                        var n_content = data.auth_notification_content;
+                        console.log('Notification Fetched');
+                        if (n_id > last_notification) {
+                            insertNotification(n_id, n_content);
+                        }
+                    } else {
+                        console.log('Error Fetching new notifications');
+                    }
+                },
+                error: function(data) {
+                    console.log('Ajax Error');
+                }
+            });
+
+
+        }
+    }
+
+    function insertNotification(id, content) {
+        console.log(id);
+        console.log(content);
+        var nofitication_html_block =
+            '<div class="box--highlight-yellow better-envato-notify" data-notification-id="' + id + '">  <a class="box__dismisser" href="#">Close</a><h4 class="box__heading">Better Envato Notification</h4>\
+    <hr class="hr-light"><div class="new-typography">' + content + '</div></div>';
+        $("#content .content-s:eq(0)").prepend(nofitication_html_block);
+
+        $('.better-envato-notify .box__dismisser').on('click', function() {
+            $('.better-envato-notify').fadeOut();
+            localStorage.last_notification = id;
+        });
+
+    }
+    auth_notifications();
+
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                Hide Author Earnings
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (hide_earnings == 'true') {
-        $('.header-logo-account__balance').hide();
+        $('.global-header-menu ul li:last-child > a.global-header-menu__link span:last-child').hide();
     }
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -427,7 +541,7 @@ $(document).ready(function() {
        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
     if (old_forum_look == 'true') {
-        pathname = window.location.href;
+        var pathname = window.location.href;
         if (pathname.indexOf('forums.envato') > -1) {
 
             // DomChange Function
@@ -450,7 +564,7 @@ $(document).ready(function() {
                         obj.addEventListener('DOMNodeInserted', callback, false);
                         obj.addEventListener('DOMNodeRemoved', callback, false);
                     }
-                };
+                }
             })();
 
             // insert styles
@@ -467,7 +581,7 @@ $(document).ready(function() {
             var poster_avatar,
                 poster_avatar_big,
                 last_reply_avatar,
-                // last_reply_avatar_med, unused variable
+                last_reply_avatar_med,
                 started_by_name,
                 last_reply_name,
                 started_by_url,
@@ -476,20 +590,20 @@ $(document).ready(function() {
             function showAvatars(thisObj) {
                 if ($('#main-outlet .topic-list .posters').length > 0) {
                     poster_avatar = $('.posters a:first-child img', thisObj).attr('src');
-                    poster_avatar_big = poster_avatar.replace("25", "80");
+                    poster_avatar_big = poster_avatar.replace(/25|120/g, '80');
                     last_reply_avatar = $('.posters .latest img', thisObj).attr('src');
-                    last_reply_avatar_mid = last_reply_avatar.replace("25", "40");
+                    last_reply_avatar_mid = last_reply_avatar.replace(/25|120/g, '40');
                     started_by_name = $('.posters a:first-child', thisObj).data('user-card');
                     last_reply_name = $('.posters .latest', thisObj).data('user-card');
                     started_by_url = cutUrl($('.main-link .title', thisObj).attr('href'));
                     last_reply_url = $('.activity a', thisObj).attr('href');
-                    $('.main-link', thisObj).prepend('<div class="thread_thumbs"><img src="' + poster_avatar_big + '" class="thread-started-by"><img src="' + last_reply_avatar_mid + '" class="thread-last-reply"></div>');
+                    $('.main-link', thisObj).prepend('<div class="thread_thumbs"><img width="80" height="80" src="' + poster_avatar_big + '" class="thread-started-by"><img width="40" height="40" src="' + last_reply_avatar_mid + '" class="thread-last-reply"></div>');
                     if ($(".topic-post-badges", thisObj).length) {
                         $(".main-link .topic-post-badges", thisObj).after('<div class="thread-quick-links"></div>');
                     } else {
                         $(".main-link .title", thisObj).after('<div class="thread-quick-links"></div>');
                     }
-                    $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>');
+                    $('.thread-quick-links', thisObj).append('<div><a href="' + started_by_url + '">Started</a> by ' + started_by_name + '</div><div> <a href="' + last_reply_url + '">Last reply</a> by ' + last_reply_name + '</div>')
                     $('.topic-list-item').addClass('old-forum-loaded');
                 }
             }
@@ -498,7 +612,7 @@ $(document).ready(function() {
                 $('.topic-list-item').each(function() {
                     showAvatars($(this));
                 });
-            }, 1000);
+            }, 1000)
 
             setTimeout(function() {
                 observeDOM(document.getElementById('main-outlet'), function() {
@@ -509,7 +623,7 @@ $(document).ready(function() {
 
                 });
 
-            }, 1000);
+            }, 1000)
 
             /*
              * Beautify Post pages to make it look like old forums
@@ -537,15 +651,15 @@ $(document).ready(function() {
                     $.getJSON("https://forums.envato.com/user-badges/" + userName + ".json", function(data) {
                         if (data.badges.length > 0) {
                             $.each(data.badges, function(i, userBadge) {
-                                badges += '<a href="https://forums.envato.com/badges/' + userBadge.id + '/x" target="_blank">';
+                                badges += '<a href="https://forums.envato.com/badges/' + userBadge.id + '/x" target="_blank">'
                                 badges += '<img src="' + userBadge.image + '" title="' + userBadge.name + '" class="user-badges"/>';
-                                badges += '</a>';
+                                badges += '</a>'
                             });
                             userImg.parents('.topic-avatar').append('<div class="topic-badges">' + badges + '</div>');
 
                             if (data.badges.length > 4) {
                                 var moreText = (data.badges.length - 4) + '+ more';
-                                userImg.parents('.topic-avatar').append('<a href="#" class="expand-badges">' + moreText + '</a>');
+                                userImg.parents('.topic-avatar').append('<a href="#" class="expand-badges">' + moreText + '</a>')
                             }
                         }
                     });
@@ -562,7 +676,7 @@ $(document).ready(function() {
 
             setTimeout(function() {
                 BeautifyPostPage();
-            }, 1000);
+            }, 1000)
 
             setTimeout(function() {
                 var renderTimer;
@@ -581,67 +695,14 @@ $(document).ready(function() {
                     $(this).remove();
                 });
 
-            }, 1000);
+            }, 1000)
 
             /*End Post Page*/
 
         } /*end pathname fn*/
     } /*end if old forum*/
 
-    /* Hide Tags from Envato */
 
-    if (hide_forum_posts == 'true') {
-
-        pathname = window.location.href;
-        if (pathname.indexOf('forums.envato') > -1) {
-
-            function hideCustomTags(thisObj) {
-                var foundtags = [];
-                $('.discourse-tag', thisObj).each(function() {
-                    foundtags.push($(this).text());
-                });
-                for (var i = 0; i < foundtags.length; i++) {
-                    if (forum_blacklist.indexOf(foundtags[i]) > -1 && forum_whitelist.indexOf(foundtags[i]) == -1) {
-                        console.log('black found');
-                        thisObj.hide();
-                    } else {
-                        thisObj.show();
-                        break;
-                    }
-
-                }
-
-            }
-
-            setTimeout(function() {
-
-                $('.topic-list-item').each(function() {
-                    if ($(this).is(':last-child')) {
-                        // do nothing
-                    } else {
-                        hideCustomTags($(this));
-
-                    }
-
-                });
-                observeDOM(document.getElementById('list-area'), function() {
-                    setTimeout(function() {
-                        $('.topic-list-item').each(function() {
-                            if ($(this).is(':last-child')) {
-                                // do nothing
-                            } else {
-                                hideCustomTags($(this));
-                            }
-                        });
-                    }, 1000);
-                });
-
-            }, 1000);
-
-        }
-    }
-
-    /*End Hide Tags*/
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                          Auto Close Item Preview Frame
@@ -663,6 +724,148 @@ $(document).ready(function() {
             top.location.replace(originalpath);
         }
     }
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                         Show Best Selling Items in the HomePage
+       ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+    if (show_best_selling_items == 'true') {
+
+        var isHomepage = window.location.pathname;
+
+        if (isHomepage == '/') {
+            showBestSelling();
+        }
+
+
+        // Show Best Selling Items in Homepage
+
+        function showBestSelling() {
+
+            var currentsiteURL = window.location.hostname;
+
+            var searchPostURL = 'https://api.envato.com/v1/discovery/search/search/item?site=' + currentsiteURL + '&date=this-week&page_size=30&sort_by=sales';
+
+            jQuery.ajax({
+                url: searchPostURL,
+                dataType: 'json',
+                headers: {
+                    'Authorization': 'Bearer ' + personal_token
+                },
+                success: function(data) {
+                    //console.log(data);
+
+                    var BestSellingResultsHTML = '<section class="page-section -color-grey -border-top -border-bottom" id="BestSellingResultsHTML"> <div class="grid-container">';
+                    BestSellingResultsHTML += '<div class="home-section"> <div class="home-section__header"> <h2 class="t-heading -size-l -margin-none"> ';
+                    BestSellingResultsHTML += '<span>Hot New Items</span></h2> <p class="t-body">This feature is provided by Better Envato Chrome Extension</p></div>';
+                    BestSellingResultsHTML += '<div class="home-section__control"> <a href="/search?date=this-week&page=2&price_max=&price_min=&rating_min=&referrer=search&sales=&sort=sales&term=&utf8=✓&view=list" class="e-btn--3d">View More</a> </div><div>';
+                    BestSellingResultsHTML += '<div class="home-section__item-thumbnail-carousel"> <div data-view="productList"> <ul class="item-thumbnail-carousel--row-10 overthrow">';
+
+                    $.each(data.matches, function(i, value) {
+                        /// do stuff
+                        // console.log(data.matches[i].name + ', ' + data.matches[i].id);
+
+                        var iconURL;
+                        if (data.matches[i].previews.icon_with_landscape_preview) {
+                            iconURL = data.matches[i].previews.icon_with_landscape_preview.icon_url;
+                        } else if (data.matches[i].previews.icon_with_video_preview) {
+                            iconURL = data.matches[i].previews.icon_with_video_preview.icon_url;
+                        } else if (data.matches[i].previews.icon_with_thumbnail_preview) {
+                            iconURL = data.matches[i].previews.icon_with_thumbnail_preview.icon_url;
+                        } else if (data.matches[i].previews.icon_with_square_preview) {
+                            iconURL = data.matches[i].previews.icon_with_square_preview.icon_url;
+                        } else if (data.matches[i].previews.icon_with_audio_preview) {
+                            iconURL = data.matches[i].previews.icon_with_audio_preview.icon_url;
+                        }
+
+                        var previewURL;
+                        if (data.matches[i].previews.landscape_preview) {
+                            previewURL = data.matches[i].previews.landscape_preview.landscape_url;
+                        } else if (data.matches[i].previews.icon_with_video_preview) {
+                            previewURL = data.matches[i].previews.icon_with_video_preview.landscape_url;
+                        } else if (data.matches[i].previews.icon_with_thumbnail_preview) {
+                            previewURL = data.matches[i].previews.icon_with_thumbnail_preview.thumbnail_url;
+                        } else if (data.matches[i].previews.icon_with_square_preview) {
+                            previewURL = data.matches[i].previews.icon_with_square_preview.square_url;
+                        }
+
+                        var priceCents = '';
+
+                        if (data.matches[i].price_cents) {
+                            priceCents = data.matches[i].price_cents.toString().slice(0, -2);
+                        }
+
+                        var previewClassname;
+
+                        if (currentsiteURL == 'photodune.net') {
+                            previewClassname = 'smart-image-magnifier';
+                        } else if (currentsiteURL == '3docean.net' || currentsiteURL == 'graphicriver.net') {
+                            previewClassname = 'square-image-magnifier';
+                        } else if (currentsiteURL == 'audiojungle.net') {
+                            previewClassname = 'tooltip-magnifier';
+                        } else {
+                            previewClassname = 'landscape-image-magnifier';
+                        }
+
+
+                        BestSellingResultsHTML += ' <li class="item-thumbnail-container ">';
+                        BestSellingResultsHTML += '  <div class="item-thumbnail__image">';
+                        BestSellingResultsHTML += ' <a href="' + data.matches[i].url + '" class="js-google-analytics__list-event-trigger">';
+                        BestSellingResultsHTML += ' <img alt="' + data.matches[i].name + '" border="0" class="' + previewClassname + ' preload no_preview" data-item-author="' + data.matches[i].author_username + '" data-item-category="' + data.matches[i].classification + '" data-item-cost="' + priceCents + '" data-item-id="' + data.matches[i].id + '" data-item-name="' + data.matches[i].name + '" data-preview-height="" data-preview-url="' + previewURL + '" data-preview-width="" height="80" src="' + iconURL + '" title="" width="80" data-tooltip="' + data.matches[i].name + '"></a>';
+                        BestSellingResultsHTML += '  </div>';
+                        BestSellingResultsHTML += '<p class="be-sales-text">' + data.matches[i].number_of_sales + ' sales</p>';
+                        BestSellingResultsHTML += ' </li>';
+
+
+                    });
+
+
+
+                    BestSellingResultsHTML += '</ul> </div></div><div class="home-section__pagination be_paginate " id="BestSellingPaginate"> <a href="#" class="be_active" data-url="1">Page 2</a> ';
+                    BestSellingResultsHTML += '<a href="#" class="js-remote" data-url="2">Page 2</a> ';
+                    BestSellingResultsHTML += '<a href="#" class="js-remote" data-url="3">Page 3</a> ';
+                    BestSellingResultsHTML += '</div></div></div></div></section>';
+
+                    $('#content section:nth-last-child(4)').before(BestSellingResultsHTML);
+
+                    $("#BestSellingResultsHTML li.item-thumbnail-container ").slice(10, 30).addClass("be_not_visible");
+
+                    $('#BestSellingPaginate a').on('click', function(e) {
+                        e.preventDefault();
+                        $('#BestSellingPaginate a').removeClass('be_active');
+                        $(this).addClass('be_active');
+
+                        $("#BestSellingResultsHTML li.item-thumbnail-container").removeClass('be_not_visible');
+
+                        if ($(this).data('url') == '1') {
+                            $("#BestSellingResultsHTML li.item-thumbnail-container ").slice(10, 30).addClass("be_not_visible");
+                        } else if ($(this).data('url') == '2') {
+                            $("#BestSellingResultsHTML li.item-thumbnail-container ").slice(0, 10).addClass("be_not_visible");
+                            $("#BestSellingResultsHTML li.item-thumbnail-container ").slice(20, 30).addClass("be_not_visible");
+                        } else if ($(this).data('url') == '3') {
+                            $("#BestSellingResultsHTML li.item-thumbnail-container ").slice(0, 20).addClass("be_not_visible");
+                        }
+                        return false
+                    });
+
+
+
+                },
+                error: function(data) {
+                    response = JSON.parse(data.responseText);
+                    console.log("Error: ", data);
+                }
+            });
+
+
+
+        }
+
+
+    }
+
+    /*--------------*/
+
 }); /*End Document Ready*/
 
 var current_url = window.location.pathname;
@@ -673,3 +876,66 @@ $(document).click(function() {
         }
     }
 });
+
+
+
+
+
+
+
+
+/*=========================================================================*/
+// Unshorten
+/*=========================================================================*/
+
+
+// $(document).ready(function(){
+
+
+// var pathname = window.location.pathname;
+// if (pathname.indexOf('author_dashboard') > -1 ) {
+
+//     $('.sidebar-right .box--hard-top').each(function(){
+//       //alert($(this).text());
+//         if ($(this).text().indexOf('New') > -1 ) {
+//             $(this).addClass('newIteminQueue');
+//         }  
+//     });
+
+//     var tests = [
+//     'http://t.co/NJwI2ugt', 
+//   'http://bit.ly/1pa4XTq',
+//     'http://www.google.com' //nothing should happen
+// ];
+
+
+
+// for(i in tests) {
+
+//   var unshortAPI = 'RP8A5XStUi0fY6PAPP6MChFteFJBr1Z3'
+
+
+//     var data = {
+//         shortURL: tests[i],
+//         responseFormat: 'json',
+//          apiKey: unshortAPI,
+//          return:'domainonly'
+//     };
+
+//     $.ajax({
+//         dataType: 'json',
+//         url: 'http://api.unshorten.it',
+//         data: data,
+//         success: function(response) {
+//             //$('#output').append(response +'<br>');
+//             console.log(response)
+//         }
+
+//     }); 
+
+// }
+
+// }
+
+
+// });
