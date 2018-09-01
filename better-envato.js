@@ -122,6 +122,8 @@ function dollartToInr() {
                     currency_sign = '€';
                 } else if (currency == 'GBP') {
                     currency_sign = '£';
+                } else if (currency == 'TRY' {
+                    currency_sign = '₺';
                 } else {
                     currency_sign = currency;
                 }
@@ -155,6 +157,8 @@ function convertPrice(unconverted_price, handleData) {
                 currency_sign = '€';
             } else if (currency == 'GBP') {
                 currency_sign = '£';
+            } else if (currency == 'TRY') {
+                currency_sign = '₺';
             } else {
                 currency_sign = currency;
             }
