@@ -1,5 +1,5 @@
 {
 "success": true,
-"auth_notification_id" : 2,
-"auth_notification_content" : "<span style='color:red;'>SOS:</span> Kerala (In India) is Flooding, We need your help.  <a href='https://forums.envato.com/t/sos-kerala-floods-2018-southern-state-in-india/186431' target='_blank'>Click here to help</a>"
+"auth_notification_id" : 3,
+"auth_notification_content" : "<span style='background-color: #74b721; padding: 4px 8px; color: #fff; border-radius: 4px; font-size: 12px;'>NEW</span> Support Hub - A premium helpdesk solution for Envato authors <br><a href='https://support-hub.io?ref=betterenvato' target='_blank' style='font-weight: bold; display: inline-block; margin-top: 5px;'> Start Free Trial Today</a>"
 }
